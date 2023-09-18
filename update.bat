@@ -50,7 +50,7 @@ set "repos[16]=https://github.com/Randy420Marsh/SeargeSDXL.git"
 set "repos[17]=https://github.com/Randy420Marsh/was-node-suite-comfyui.git"
 set "repos[18]=https://github.com/Randy420Marsh/wlsh_nodes.git"
 
-for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19) do (
+for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18) do (
     set "repo_url=!repos[%%i]!"
     for %%j in ("!repo_url!") do (
         set "repo_name=%%~nj"
@@ -71,7 +71,7 @@ REM recursive repos
 
 cd custom_nodes
 
-set "repos[0]=https://github.com/Randy420Marsh/ComfyUI_UltimateSDUpscale.git"
+set "repos[0]=https://github.com/Randy420Marsh/ComfyUI_UltimateSDUpscale.git --recursive"
 
 for %%i in (0) do (
     set "repo_url=!repos[%%i]!"
@@ -85,7 +85,7 @@ for %%i in (0) do (
             popd
         ) else (
             echo Cloning !repo_name!...
-            git clone "%%j" "!repo_name!%~1 --recursive"
+            git clone "%%j" "!repo_name!%~1"
         )
     )
 )
