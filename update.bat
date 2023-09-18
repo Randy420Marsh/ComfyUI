@@ -35,21 +35,20 @@ set "repos[1]=https://github.com/Randy420Marsh/ComfyUI_ADV_CLIP_emb.git"
 set "repos[2]=https://github.com/Randy420Marsh/ComfyUI_Comfyroll_CustomNodes.git"
 set "repos[3]=https://github.com/Randy420Marsh/comfyui_controlnet_aux.git"
 set "repos[4]=https://github.com/Randy420Marsh/ComfyUI_TiledKSampler.git"
-set "repos[5]=https://github.com/Randy420Marsh/ComfyUI_UltimateSDUpscale.git"
-set "repos[6]=https://github.com/Randy420Marsh/ComfyUI-Custom-Scripts.git"
-set "repos[7]=https://github.com/Randy420Marsh/comfyui-dynamicprompts.git"
-set "repos[8]=https://github.com/Randy420Marsh/ComfyUI-Impact-Pack.git"
-set "repos[9]=https://github.com/Randy420Marsh/ComfyUI-Manager.git"
-set "repos[10]=https://github.com/Randy420Marsh/ComfyUI-QualityOfLifeSuit_Omar92.git"
-set "repos[11]=https://github.com/Randy420Marsh/Derfuu_ComfyUI_ModdedNodes.git"
-set "repos[12]=https://github.com/Randy420Marsh/efficiency-nodes-comfyui.git"
-set "repos[13]=https://github.com/Randy420Marsh/failfast-comfyui-extensions.git"
-set "repos[14]=https://github.com/Randy420Marsh/masquerade-nodes-comfyui.git"
-set "repos[15]=https://github.com/Randy420Marsh/nui-suite.git"
-set "repos[16]=https://github.com/Randy420Marsh/sdxl_prompt_styler.git"
-set "repos[17]=https://github.com/Randy420Marsh/SeargeSDXL.git"
-set "repos[18]=https://github.com/Randy420Marsh/was-node-suite-comfyui.git"
-set "repos[19]=https://github.com/Randy420Marsh/wlsh_nodes.git"
+set "repos[5]=https://github.com/Randy420Marsh/ComfyUI-Custom-Scripts.git"
+set "repos[6]=https://github.com/Randy420Marsh/comfyui-dynamicprompts.git"
+set "repos[7]=https://github.com/Randy420Marsh/ComfyUI-Impact-Pack.git"
+set "repos[8]=https://github.com/Randy420Marsh/ComfyUI-Manager.git"
+set "repos[9]=https://github.com/Randy420Marsh/ComfyUI-QualityOfLifeSuit_Omar92.git"
+set "repos[10]=https://github.com/Randy420Marsh/Derfuu_ComfyUI_ModdedNodes.git"
+set "repos[11]=https://github.com/Randy420Marsh/efficiency-nodes-comfyui.git"
+set "repos[12]=https://github.com/Randy420Marsh/failfast-comfyui-extensions.git"
+set "repos[13]=https://github.com/Randy420Marsh/masquerade-nodes-comfyui.git"
+set "repos[14]=https://github.com/Randy420Marsh/nui-suite.git"
+set "repos[15]=https://github.com/Randy420Marsh/sdxl_prompt_styler.git"
+set "repos[16]=https://github.com/Randy420Marsh/SeargeSDXL.git"
+set "repos[17]=https://github.com/Randy420Marsh/was-node-suite-comfyui.git"
+set "repos[18]=https://github.com/Randy420Marsh/wlsh_nodes.git"
 
 for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19) do (
     set "repo_url=!repos[%%i]!"
@@ -64,6 +63,29 @@ for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19) do (
         ) else (
             echo Cloning !repo_name!...
             git clone "%%j" "!repo_name!%~1"
+        )
+    )
+)
+
+REM recursive repos
+
+cd custom_nodes
+
+set "repos[0]=https://github.com/Randy420Marsh/ComfyUI_UltimateSDUpscale.git"
+
+for %%i in (0) do (
+    set "repo_url=!repos[%%i]!"
+    for %%j in ("!repo_url!") do (
+        set "repo_name=%%~nj"
+        
+        if exist "!repo_name!%~1" (
+            echo Updating !repo_name!...
+            pushd "!repo_name!%~1"
+            git pull
+            popd
+        ) else (
+            echo Cloning !repo_name!...
+            git clone "%%j" "!repo_name!%~1 --recursive"
         )
     )
 )
