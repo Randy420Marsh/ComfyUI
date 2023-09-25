@@ -543,8 +543,8 @@ class LoraLoader:
         return {"required": { "model": ("MODEL",),
                               "clip": ("CLIP", ),
                               "lora_name": (folder_paths.get_filename_list("loras"), ),
-                              "strength_model": ("FLOAT", {"default": 1.0, "min": -10.0, "max": 10.0, "step": 0.01}),
-                              "strength_clip": ("FLOAT", {"default": 1.0, "min": -10.0, "max": 10.0, "step": 0.01}),
+                              "strength_model": ("FLOAT", {"default": 1.0, "min": -20.0, "max": 20.0, "step": 0.01}),
+                              "strength_clip": ("FLOAT", {"default": 1.0, "min": -20.0, "max": 20.0, "step": 0.01}),
                               }}
     RETURN_TYPES = ("MODEL", "CLIP")
     FUNCTION = "load_lora"
@@ -891,7 +891,7 @@ class EmptyLatentImage:
     def INPUT_TYPES(s):
         return {"required": { "width": ("INT", {"default": 512, "min": 16, "max": MAX_RESOLUTION, "step": 8}),
                               "height": ("INT", {"default": 512, "min": 16, "max": MAX_RESOLUTION, "step": 8}),
-                              "batch_size": ("INT", {"default": 1, "min": 1, "max": 64})}}
+                              "batch_size": ("INT", {"default": 1, "min": 1, "max": 4096})}}
     RETURN_TYPES = ("LATENT",)
     FUNCTION = "generate"
 
@@ -1503,7 +1503,7 @@ class EmptyImage:
     def INPUT_TYPES(s):
         return {"required": { "width": ("INT", {"default": 512, "min": 1, "max": MAX_RESOLUTION, "step": 1}),
                               "height": ("INT", {"default": 512, "min": 1, "max": MAX_RESOLUTION, "step": 1}),
-                              "batch_size": ("INT", {"default": 1, "min": 1, "max": 64}),
+                              "batch_size": ("INT", {"default": 1, "min": 1, "max": 4096}),
                               "color": ("INT", {"default": 0, "min": 0, "max": 0xFFFFFF, "step": 1, "display": "color"}),
                               }}
     RETURN_TYPES = ("IMAGE",)
@@ -1604,7 +1604,7 @@ NODE_CLASS_MAPPINGS = {
     "ImageBatch": ImageBatch,
     "ImagePadForOutpaint": ImagePadForOutpaint,
     "EmptyImage": EmptyImage,
-    "ConditioningAverage ": ConditioningAverage ,
+    "ConditioningAverage": ConditioningAverage ,
     "ConditioningCombine": ConditioningCombine,
     "ConditioningConcat": ConditioningConcat,
     "ConditioningSetArea": ConditioningSetArea,
@@ -1772,6 +1772,7 @@ def load_custom_nodes():
         print()
 
 def init_custom_nodes():
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_latent.py"))
     load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_hypernetwork.py"))
     load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_upscale_model.py"))
     load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_post_processing.py"))
@@ -1781,4 +1782,5 @@ def init_custom_nodes():
     load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_tomesd.py"))
     load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_clip_sdxl.py"))
     load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_canny.py"))
+    load_custom_node(os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy_extras"), "nodes_freelunch.py"))
     load_custom_nodes()
