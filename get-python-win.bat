@@ -4,7 +4,7 @@ setlocal
 set ZIP_URL=https://github.com/Randy420Marsh/cpython/releases/download/v3.10.13/python-3.10.13-embed-amd64.zip
 set ZIP_FILENAME=python-3.10.13-embed-amd64.zip
 set EXTRACT_FOLDER=python-3.10.13-embed-amd64
-set CHECKSUM=b455d386b29ae9d93f906ce0ef1aeef1a64eb32348d678a0ee466437fa620a62
+set CHECKSUM=6c999e7f7c10e30f0270bc780a56ceea001d216035f16aa2704a795127d09df7
 
 if not exist "%ZIP_FILENAME%" (
     echo File "%ZIP_FILENAME%" not found. Downloading...

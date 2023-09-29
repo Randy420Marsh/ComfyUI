@@ -2,7 +2,7 @@
 
 setlocal enabledelayedexpansion
 
-set "PYTHON=C:\Python-3.10\PCbuild\amd64\python.exe"
+set "PYTHON=python"
 
 echo "Launching..."
 

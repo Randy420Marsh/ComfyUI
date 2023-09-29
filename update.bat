@@ -10,7 +10,7 @@ set "COMFY_UI_DIR=%CD%"
 
 echo COMFY_UI_DIR = %COMFY_UI_DIR%
 
-IF exist ./venv (call .\venv\scripts\activate.bat) ELSE ("C:\Python-3.10\PCbuild\amd64\python.exe" -m venv venv && call .\venv\scripts\activate.bat)
+IF exist ./venv (call .\venv\scripts\activate.bat) ELSE ("python" -m venv venv && call .\venv\scripts\activate.bat)
 
 python --version
 
