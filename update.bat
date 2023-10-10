@@ -14,8 +14,6 @@ IF exist ./venv (call .\venv\scripts\activate.bat) ELSE ("python" -m venv venv &
 
 python --version
 
-pause
-
 ::#pip uninstall torch torchvision xformers
 
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118

@@ -31,6 +31,9 @@ pip install -r requirements.txt
 
 cd custom_nodes
 
+# Deprecated nodes
+# https://github.com/Randy420Marsh/comfy_controlnet_preprocessors.git
+
 repos=("https://github.com/Randy420Marsh/ComfyUI_ADV_CLIP_emb.git"
 "https://github.com/Randy420Marsh/ComfyUI_Comfyroll_CustomNodes.git"
 "https://github.com/Randy420Marsh/comfyui_controlnet_aux.git"
