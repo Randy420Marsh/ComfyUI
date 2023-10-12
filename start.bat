@@ -36,6 +36,6 @@ python --version
 ::#export controlnet_dir="$SD_ROOT_PATH//models//ControlNet"
 ::#export controlnet_annotator_models_path="$SD_ROOT_PATH//models//ControlNet//annotator//models"
 
-python -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --gpu-only
+python -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention
 
 pause

@@ -3,20 +3,20 @@
 #config for a1111 ui
 #all you have to do is change the base_path to where yours is installed
 a111:
-    base_path: "C:\\AI\\stable_diffusion_models_and_vae\\"
-    checkpoints: models\\Stable-diffusion
-    configs: models\\Stable-diffusion
-    vae: models\\VAE
+    base_path: "C://AI//stable-diffusion-webui-docker//data//"
+    checkpoints: models//Stable-diffusion
+    configs: models//Stable-diffusion
+    vae: models//VAE
     loras: |
-         models\\Lora
-         models\\LyCORIS
+         models//Lora
+         models//LyCORIS
     upscale_models: |
-                  models\\ESRGAN
-                  models\\RealESRGAN
-                  models\\SwinIR
+                  models//ESRGAN
+                  models//RealESRGAN
+                  models//SwinIR
     embeddings: embeddings
-    hypernetworks: models\\hypernetworks
-    controlnet: models\\ControlNet
+    hypernetworks: models//hypernetworks
+    controlnet: models//ControlNet
 
 #other_ui:
 #    base_path: path/to/ui
