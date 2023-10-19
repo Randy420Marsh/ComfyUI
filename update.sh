@@ -21,7 +21,7 @@ pip uninstall torch torchvision xformers
 
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
-pip install xformers --pre
+pip install xformers
 
 python -m pip install --upgrade pip
 

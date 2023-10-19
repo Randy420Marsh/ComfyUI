@@ -18,7 +18,7 @@ python --version
 
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
-pip install xformers --pre
+pip install xformers
 
 python.exe -m pip install --upgrade pip
 
