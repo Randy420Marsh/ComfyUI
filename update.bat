@@ -14,13 +14,11 @@ IF exist ./venv (call .\venv\scripts\activate.bat) ELSE ("python" -m venv venv &
 
 python --version
 
-::#pip uninstall torch torchvision xformers
+pip uninstall -y torch torchvision xformers
 
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" --index-url https://download.pytorch.org/whl/cu118
 
-pip install xformers
-
-python.exe -m pip install --upgrade pip
+pip install "xformers==0.0.22"
 
 git pull
 
