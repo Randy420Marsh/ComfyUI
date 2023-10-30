@@ -10,7 +10,7 @@ cd %CD%
 
 REM ##########################################
 
-set "SD_ROOT_PATH=C://AI//stable-diffusion-webui-docker//data"
+set "SD_ROOT_PATH=E://AI//stable_diffusion_models_and_vae"
 
 REM ##########################################
 
@@ -36,6 +36,8 @@ python --version
 ::#export controlnet_dir="$SD_ROOT_PATH//models//ControlNet"
 ::#export controlnet_annotator_models_path="$SD_ROOT_PATH//models//ControlNet//annotator//models"
 
-python -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention
+python -s main.py --dont-upcast-attention --port 4434 --highvram --use-pytorch-cross-attention
+
+::--use-pytorch-cross-attention
 
 pause
