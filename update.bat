@@ -47,8 +47,10 @@ set "repos[17]=https://github.com/Randy420Marsh/was-node-suite-comfyui.git"
 set "repos[18]=https://github.com/Randy420Marsh/wlsh_nodes.git"
 set "repos[19]=https://github.com/Randy420Marsh/ComfyUI-AnimateDiff-Evolved.git"
 set "repos[20]=https://github.com/Randy420Marsh/ComfyUI_FizzNodes.git"
+set "repos[21]=https://github.com/Randy420Marsh/ComfyUI-VideoHelperSuite.git"
 
-for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20) do (
+
+for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21) do (
     set "repo_url=!repos[%%i]!"
     for %%j in ("!repo_url!") do (
         set "repo_name=%%~nj"
@@ -116,6 +118,8 @@ pip install -r  %CUSTOM_NODES_DIR%\nui-suite\requirements.txt
 pip install -r  %CUSTOM_NODES_DIR%\was-node-suite-comfyui\requirements.txt
 
 pip install -r  %CUSTOM_NODES_DIR%\ComfyUI_FizzNodes\requirements.txt
+
+pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-VideoHelperSuite\requirements.txt
 
 echo "Update/install finished 2/2..."
 
