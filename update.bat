@@ -114,7 +114,7 @@ pip install -r  %CUSTOM_NODES_DIR%\comfyui_controlnet_aux\requirements.txt
 
 pip install -r  %CUSTOM_NODES_DIR%\comfyui-dynamicprompts\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\efficiency-nodes-comfyui\requirements.txt
+REM pip install -r  %CUSTOM_NODES_DIR%\efficiency-nodes-comfyui\requirements.txt
 
 pip install -r  %CUSTOM_NODES_DIR%\nui-suite\requirements.txt
 
