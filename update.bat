@@ -39,7 +39,7 @@ set "repos[7]=https://github.com/Randy420Marsh/ComfyUI-Impact-Pack.git"
 set "repos[8]=https://github.com/Randy420Marsh/ComfyUI-Manager.git"
 set "repos[9]=https://github.com/Randy420Marsh/ComfyUI-QualityOfLifeSuit_Omar92.git"
 set "repos[10]=https://github.com/Randy420Marsh/Derfuu_ComfyUI_ModdedNodes.git"
-set "repos[11]=https://github.com/Randy420Marsh/efficiency-nodes-comfyui.git"
+REM set "repos[11]=https://github.com/Randy420Marsh/efficiency-nodes-comfyui.git"
 set "repos[12]=https://github.com/Randy420Marsh/failfast-comfyui-extensions.git"
 set "repos[13]=https://github.com/Randy420Marsh/masquerade-nodes-comfyui.git"
 set "repos[14]=https://github.com/Randy420Marsh/nui-suite.git"
@@ -53,7 +53,7 @@ set "repos[21]=https://github.com/Randy420Marsh/ComfyUI-VideoHelperSuite.git"
 set "repos[22]=https://github.com/Randy420Marsh/ComfyUI-Advanced-ControlNet.git"
 
 
-for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22) do (
+for %%i in (1 2 3 4 5 6 7 8 9 10 12 13 14 15 16 17 18 19 20 21 22) do (
     set "repo_url=!repos[%%i]!"
     for %%j in ("!repo_url!") do (
         set "repo_name=%%~nj"
