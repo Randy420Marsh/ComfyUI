@@ -14,6 +14,8 @@ IF exist ./venv (call .\venv\scripts\activate.bat) ELSE ("python" -m venv venv &
 
 python --version
 
+python.exe -m pip install --upgrade pip
+
 pip uninstall -y torch torchvision xformers
 
 pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" --index-url https://download.pytorch.org/whl/cu118
@@ -48,9 +50,10 @@ set "repos[18]=https://github.com/Randy420Marsh/wlsh_nodes.git"
 set "repos[19]=https://github.com/Randy420Marsh/ComfyUI-AnimateDiff-Evolved.git"
 set "repos[20]=https://github.com/Randy420Marsh/ComfyUI_FizzNodes.git"
 set "repos[21]=https://github.com/Randy420Marsh/ComfyUI-VideoHelperSuite.git"
+set "repos[22]=https://github.com/Randy420Marsh/ComfyUI-Advanced-ControlNet.git"
 
 
-for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21) do (
+for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22) do (
     set "repo_url=!repos[%%i]!"
     for %%j in ("!repo_url!") do (
         set "repo_name=%%~nj"
@@ -120,6 +123,8 @@ pip install -r  %CUSTOM_NODES_DIR%\was-node-suite-comfyui\requirements.txt
 pip install -r  %CUSTOM_NODES_DIR%\ComfyUI_FizzNodes\requirements.txt
 
 pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-VideoHelperSuite\requirements.txt
+
+pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Advanced-ControlNet\requirements.txt
 
 echo "Update/install finished 2/2..."
 
