@@ -9,7 +9,7 @@ echo "COMFY_UI_DIR = $COMFY_UI_DIR"
 if [ -d "./venv" ]; then
     source ./venv/bin/activate
 else
-    python3 -m venv venv
+    python3.10 -m venv venv
     source ./venv/bin/activate
 fi
 
