@@ -86,6 +86,10 @@ export class ComfyApp {
 			return "";
 	}
 
+	getRandParam() {
+		return "&rand=" + Math.random();
+	}
+
 	static isImageNode(node) {
 		return node.imgs || (node && node.widgets && node.widgets.findIndex(obj => obj.name === 'image') >= 0);
 	}
@@ -411,7 +415,7 @@ export class ComfyApp {
 		node.prototype.setSizeForImage = function (force) {
 			if(!force && this.animatedImages) return;
 
-			if (this.inputHeight) {
+			if (this.inputHeight || this.freeWidgetSpace > 210) {
 				this.setSize(this.size);
 				return;
 			}
@@ -437,7 +441,7 @@ export class ComfyApp {
 								return api.apiURL(
 									"/view?" +
 										new URLSearchParams(params).toString() +
-										(this.animatedImages ? "" : app.getPreviewFormatParam())
+										(this.animatedImages ? "" : app.getPreviewFormatParam()) + app.getRandParam()
 								);
 							})
 						);
@@ -1515,14 +1519,36 @@ export class ComfyApp {
 	}
 
 	showMissingNodesError(missingNodeTypes, hasAddedNodes = true) {
+		let seenTypes = new Set();
+
 		this.ui.dialog.show(
-			$el("div", [
+			$el("div.comfy-missing-nodes", [
 				$el("span", { textContent: "When loading the graph, the following node types were not found: " }),
 				$el(
 					"ul",
-					Array.from(new Set(missingNodeTypes)).map((t) => $el("li", { textContent: t }))
+					Array.from(new Set(missingNodeTypes)).map((t) => {
+						let children = [];
+						if (typeof t === "object") {
+							if(seenTypes.has(t.type)) return null;
+							seenTypes.add(t.type);
+							children.push($el("span", { textContent: t.type }));
+							if (t.hint) {
+								children.push($el("span", { textContent: t.hint }));
+							}
+							if (t.action) {
+								children.push($el("button", { onclick: t.action.callback, textContent: t.action.text }));
+							}
+						} else {
+							if(seenTypes.has(t)) return null;
+							seenTypes.add(t);
+							children.push($el("span", { textContent: t }));
+						}
+						return $el("li", children);
+					}).filter(Boolean)
 				),
-				...(hasAddedNodes ? [$el("span", { textContent: "Nodes that have failed to load will show as red on the graph." })] : []),
+				...(hasAddedNodes
+					? [$el("span", { textContent: "Nodes that have failed to load will show as red on the graph." })]
+					: []),
 			])
 		);
 		this.logging.addEntry("Comfy.App", "warn", {
@@ -1678,7 +1704,8 @@ export class ComfyApp {
 		const output = {};
 		// Process nodes in order of execution
 		for (const outerNode of this.graph.computeExecutionOrder(false)) {
-			const innerNodes = outerNode.getInnerNodes ? outerNode.getInnerNodes() : [outerNode];
+			const skipNode = outerNode.mode === 2 || outerNode.mode === 4;
+			const innerNodes = (!skipNode && outerNode.getInnerNodes) ? outerNode.getInnerNodes() : [outerNode];
 			for (const node of innerNodes) {
 				if (node.isVirtualNode) {
 					continue;
@@ -1874,6 +1901,8 @@ export class ComfyApp {
 			if (pngInfo) {
 				if (pngInfo.workflow) {
 					await this.loadGraphData(JSON.parse(pngInfo.workflow));
+				} else if (pngInfo.prompt) {
+					this.loadApiJson(JSON.parse(pngInfo.prompt));
 				} else if (pngInfo.parameters) {
 					importA1111(this.graph, pngInfo.parameters);
 				}
@@ -1885,6 +1914,8 @@ export class ComfyApp {
 					this.loadGraphData(JSON.parse(pngInfo.workflow));
 				} else if (pngInfo.Workflow) {
 					this.loadGraphData(JSON.parse(pngInfo.Workflow)); // Support loading workflows from that webp custom node.
+				} else if (pngInfo.prompt) {
+					this.loadApiJson(JSON.parse(pngInfo.prompt));
 				}
 			}
 		} else if (file.type === "application/json" || file.name?.endsWith(".json")) {
@@ -1904,6 +1935,8 @@ export class ComfyApp {
 			const info = await getLatentMetadata(file);
 			if (info.workflow) {
 				await this.loadGraphData(JSON.parse(info.workflow));
+			} else if (info.prompt) {
+				this.loadApiJson(JSON.parse(info.prompt));
 			}
 		}
 	}
