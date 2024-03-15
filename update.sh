@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo This script is from 2023...
+
 CUSTOM_NODES_DIR="$(pwd)/custom_nodes"
 echo "CUSTOM_NODES_DIR = $CUSTOM_NODES_DIR"
 
