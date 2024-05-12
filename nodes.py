@@ -1457,25 +1457,28 @@ class LoadImage:
     def load_image(self, image):
         image_path = folder_paths.get_annotated_filepath(image)
         
-        img = node_helpers.open_image(image_path)
+        img = node_helpers.pillow(Image.open, image_path)
         
         output_images = []
         output_masks = []
+        w, h = None, None
+
+        excluded_formats = ['MPO']
+        
         for i in ImageSequence.Iterator(img):
-            prev_value = None
-            try:
-                i = ImageOps.exif_transpose(i)
-            except OSError:
-                prev_value = ImageFile.LOAD_TRUNCATED_IMAGES
-                ImageFile.LOAD_TRUNCATED_IMAGES = True
-                i = ImageOps.exif_transpose(i)
-            finally:
-                if prev_value is not None:
-                    ImageFile.LOAD_TRUNCATED_IMAGES = prev_value
+            i = node_helpers.pillow(ImageOps.exif_transpose, i)
 
             if i.mode == 'I':
                 i = i.point(lambda i: i * (1 / 255))
             image = i.convert("RGB")
+
+            if len(output_images) == 0:
+                w = image.size[0]
+                h = image.size[1]
+            
+            if image.size[0] != w or image.size[1] != h:
+                continue
+            
             image = np.array(image).astype(np.float32) / 255.0
             image = torch.from_numpy(image)[None,]
             if 'A' in i.getbands():
@@ -1486,7 +1489,7 @@ class LoadImage:
             output_images.append(image)
             output_masks.append(mask.unsqueeze(0))
 
-        if len(output_images) > 1:
+        if len(output_images) > 1 and img.format not in excluded_formats:
             output_image = torch.cat(output_images, dim=0)
             output_mask = torch.cat(output_masks, dim=0)
         else:
@@ -1527,8 +1530,8 @@ class LoadImageMask:
     FUNCTION = "load_image"
     def load_image(self, image, channel):
         image_path = folder_paths.get_annotated_filepath(image)
-        i = Image.open(image_path)
-        i = ImageOps.exif_transpose(i)
+        i = node_helpers.pillow(Image.open, image_path)
+        i = node_helpers.pillow(ImageOps.exif_transpose, i)
         if i.getbands() != ("R", "G", "B", "A"):
             if i.mode == 'I':
                 i = i.point(lambda i: i * (1 / 255))
