@@ -12,7 +12,7 @@ set "COMFY_UI_DIR=%CD%"
 
 echo COMFY_UI_DIR = %COMFY_UI_DIR%
 
-IF exist ./venv (call .\venv\scripts\activate.bat) ELSE ("python" -m venv venv && call .\venv\scripts\activate.bat)
+IF exist ./venv-cpu (call .\venv-cpu\scripts\activate.bat) ELSE ("python" -m venv venv-cpu && call .\venv-cpu\scripts\activate.bat)
 
 python --version
 
@@ -20,11 +20,11 @@ python.exe -m pip install --upgrade pip
 
 pip uninstall -y torch torchvision xformers
 
-pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" --index-url https://download.pytorch.org/whl/cu118
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 #pip install "xformers==0.0.22"
 
-pip install "xformers"
+pip install xformers
 
 git pull
 

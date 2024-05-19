@@ -8,11 +8,11 @@ echo "CUSTOM_NODES_DIR = $CUSTOM_NODES_DIR"
 COMFY_UI_DIR="$(pwd)"
 echo "COMFY_UI_DIR = $COMFY_UI_DIR"
 
-if [ -d "./venv" ]; then
-    source ./venv/bin/activate
+if [ -d "./venv-cpu" ]; then
+    source ./venv-cpu/bin/activate
 else
-    python3.10 -m venv venv
-    source ./venv/bin/activate
+    python3.10 -m venv venv-cpu
+    source ./venv-cpu/bin/activate
 fi
 
 python --version
@@ -21,7 +21,7 @@ read -p "Press Enter to continue..."
 
 pip uninstall -y torch torchvision xformers
 
-pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" --index-url https://download.pytorch.org/whl/cu118
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 #pip install "xformers==0.0.22"
 
