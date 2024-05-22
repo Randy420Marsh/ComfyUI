@@ -22,8 +22,8 @@ echo "Current User = $USER"
 echo "User Home Directory = $USER_HOME"
 echo "SD models root path = $SD_ROOT_PATH"
 
-export SAFETENSORS_FAST_GPU=1
-export PYTORCH_CUDA_ALLOC_CONF="garbage_collection_threshold:0.9,max_split_size_mb:512"
+#export SAFETENSORS_FAST_GPU=1
+#export PYTORCH_CUDA_ALLOC_CONF="garbage_collection_threshold:0.9,max_split_size_mb:512"
 
 source ./venv/bin/activate
 

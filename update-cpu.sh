@@ -2,6 +2,8 @@
 
 echo This script is uodated 2024...
 
+python_cmd="python3.10"
+
 CUSTOM_NODES_DIR="$(pwd)/custom_nodes"
 echo "CUSTOM_NODES_DIR = $CUSTOM_NODES_DIR"
 
@@ -11,11 +13,11 @@ echo "COMFY_UI_DIR = $COMFY_UI_DIR"
 if [ -d "./venv-cpu" ]; then
     source ./venv-cpu/bin/activate
 else
-    python3.10 -m venv venv-cpu
+    $python_cmd -m venv venv-cpu
     source ./venv-cpu/bin/activate
 fi
 
-python --version
+$python_cmd --version
 
 read -p "Press Enter to continue..."
 
@@ -27,7 +29,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 
 pip install xformers
 
-python -m pip install --upgrade pip
+$python_cmd -m pip install --upgrade pip
 
 git pull
 

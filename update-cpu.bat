@@ -1,6 +1,6 @@
 @echo off
 
-echo This script is uodated 2024...
+echo This script is updated 2024...
 
 setlocal enabledelayedexpansion
 
@@ -24,7 +24,7 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 
 #pip install "xformers==0.0.22"
 
-pip install xformers
+#pip install xformers
 
 git pull
 

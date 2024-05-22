@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd $PWD
+
+source ./venv/bin/activate
+
+echo "venv activated"
+
+python --version
+
