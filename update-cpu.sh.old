@@ -2,6 +2,8 @@
 
 echo This script is uodated 2024...
 
+sudo apt install -y libjemalloc-dev intel-mkl gperftools
+
 python_cmd="python3.10"
 
 CUSTOM_NODES_DIR="$(pwd)/custom_nodes"
@@ -23,7 +25,7 @@ read -p "Press Enter to continue..."
 
 pip uninstall -y torch torchvision xformers
 
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
 #pip install "xformers==0.0.22"
 

@@ -2,6 +2,19 @@
 
 echo "Launching..."
 
+# Determine the maximum number of available CPU threads
+MAX_THREADS=$(nproc)
+
+# Set the environment variables
+export OMP_NUM_THREADS=$MAX_THREADS
+export MKL_NUM_THREADS=$MAX_THREADS
+
+echo "Using $MAX_THREADS threads for OMP and MKL"
+
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so:$LD_PRELOAD
+export MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms: 60000,muzzy_decay_ms:60000"
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
+
 python_cmd="python3.10"
 
 # Check if the script is run as root
