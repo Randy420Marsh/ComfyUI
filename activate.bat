@@ -8,4 +8,4 @@ setlocal enabledelayedexpansion
 
 set "PYTHON=python"
 
-IF exist ./venv (cmd /k call .\venv\scripts\activate.bat)  ELSE (cmd /k python -m venv venv && cmd /k call .\venv\scripts\activate.bat)
+IF exist ./venv (cmd /k call .\venv\scripts\activate.bat) ELSE (cmd /k python -m venv venv && cmd /k call .\venv\scripts\activate.bat)
