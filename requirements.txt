@@ -10,5 +10,7 @@ Pillow
 scipy
 tqdm
 psutil
+
+#non essential dependencies:
 kornia>=0.7.1
-scikit-learn-intelex
+spandrel
