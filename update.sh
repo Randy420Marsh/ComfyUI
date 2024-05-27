@@ -4,8 +4,6 @@ echo "This script is updated 2024..."
 
 git pull
 
-sudo apt install -y libjemalloc-dev intel-mkl gperftools
-
 python_cmd="python3.10"
 
 CUSTOM_NODES_DIR="$(pwd)/custom_nodes"
@@ -14,28 +12,43 @@ echo "CUSTOM_NODES_DIR = $CUSTOM_NODES_DIR"
 COMFY_UI_DIR="$(pwd)"
 echo "COMFY_UI_DIR = $COMFY_UI_DIR"
 
+# Check for NVIDIA GPU
+gpu_info=$(lspci | grep -i nvidia)
+
+if [ -n "$gpu_info" ]; then
+    echo "NVIDIA GPU detected: $gpu_info"
+else
+    echo "No NVIDIA GPU detected."
+fi
+
 # Prompt user for choice
 while true; do
     read -p "Do you want to update the GPU or CPU version (G/C)? " user_choice
 
     case $user_choice in
-        [Gg]* ) 
+        [Gg]* )
             venv_dir="venv"
             install_cmd="pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118"
             install_xformers=true
             break
             ;;
-        [Cc]* ) 
+        [Cc]* )
             venv_dir="venv-cpu"
             install_cmd="pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu"
             install_xformers=false
             break
             ;;
-        * ) 
+        * )
             echo "Invalid choice. Please enter G for GPU version or C for CPU version."
             ;;
     esac
 done
+
+$python_cmd --version
+
+read -p "Press Enter to continue..."
+
+sudo apt install -y libjemalloc-dev intel-mkl gperf
 
 # Create and activate virtual environment
 if [ -d "./$venv_dir" ]; then
@@ -45,24 +58,22 @@ else
     source ./$venv_dir/bin/activate
 fi
 
-$python_cmd --version
-
-read -p "Press Enter to continue..."
-
 $python_cmd -m pip install --upgrade pip
+
+cd "${COMFY_UI_DIR}"
 
 pip uninstall -y torch torchvision xformers
 
 # Install chosen version of torch and torchvision
 $install_cmd
 
+pip install -r requirements.txt
+
 if [ "$install_xformers" = true ]; then
     pip install xformers
 fi
 
-pip install -r requirements.txt
-
-cd custom_nodes
+cd "$CUSTOM_NODES_DIR"
 
 repos=(
     "https://github.com/Randy420Marsh/ComfyUI_ADV_CLIP_emb.git"
