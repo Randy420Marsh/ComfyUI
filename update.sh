@@ -7,6 +7,7 @@ git pull
 python_cmd="python3.10"
 
 CUSTOM_NODES_DIR="$(pwd)/custom_nodes"
+
 echo "CUSTOM_NODES_DIR = $CUSTOM_NODES_DIR"
 
 COMFY_UI_DIR="$(pwd)"

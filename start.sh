@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Check if the script is run as root
+if [ "$USER" == "root" ]; then
+    echo "Warning: This script cannot be run as root."
+    read -p "Press any key to exit..."
+    exit 1
+fi
+
+python_cmd="python3.10"
+
+venv_dir="venv"
+
 echo "Launching..."
 
 # Determine the maximum number of available CPU threads
@@ -14,15 +25,6 @@ echo "Using $MAX_THREADS threads for OMP and MKL"
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so:$LD_PRELOAD
 export MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms: 60000,muzzy_decay_ms:60000"
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
-
-python_cmd="python3.10"
-
-# Check if the script is run as root
-if [ "$USER" == "root" ]; then
-    echo "Warning: This script cannot be run as root."
-    read -p "Press any key to exit..."
-    exit 1
-fi
 
 cd "$(pwd)"
 
@@ -40,7 +42,7 @@ echo "SD models root path = $SD_ROOT_PATH"
 export SAFETENSORS_FAST_GPU=1
 export PYTORCH_CUDA_ALLOC_CONF="garbage_collection_threshold:0.9,max_split_size_mb:512"
 
-source ./venv/bin/activate
+source ./$venv_dir/bin/activate
 
 echo "venv activated"
 $python_cmd --version
