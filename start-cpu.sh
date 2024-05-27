@@ -49,7 +49,5 @@ $python_cmd --version
 # export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 # export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-$python_cmd -s main.py --dont-upcast-attention --port 4434 --cpu
+$python_cmd -s main.py --dont-upcast-attention --port 4434 --cpu --preview-method auto
 
-# Uncomment if you want to run with different options
-# python -s main.py --dont-upcast-attention --port 4434 --highvram --use-pytorch-cross-attention --gpu-only

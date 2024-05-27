@@ -26,20 +26,12 @@ REM set PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_
 
 call .\venv-cpu\scripts\activate.bat
 
-::set python="\\Python-3.10.12\\python.exe"
-
-::set python3="\\Python-3.10.12\\python.exe"
-
 echo "venv-cpu activated"
-python --version
+%PYTHON% --version
 
 ::#export controlnet_dir="$SD_ROOT_PATH//models//ControlNet"
 ::#export controlnet_annotator_models_path="$SD_ROOT_PATH//models//ControlNet//annotator//models"
 
-python -s main.py --dont-upcast-attention --port 4434 --cpu
-
-::--use-pytorch-cross-attention
-
-::python -s main.py --dont-upcast-attention --port 4434 --highvram --use-pytorch-cross-attention --gpu-only
+%PYTHON% -s main.py --dont-upcast-attention --port 4434 --cpu --preview-method auto
 
 pause
