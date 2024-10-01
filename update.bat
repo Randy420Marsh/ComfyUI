@@ -124,7 +124,7 @@ pip install -r  %CUSTOM_NODES_DIR%\ComfyUI_FizzNodes\requirements.txt
 
 pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-VideoHelperSuite\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Advanced-ControlNet\requirements.txt
+REM pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Advanced-ControlNet\requirements.txt
 
 echo "Update/install finished 2/2..."
 
