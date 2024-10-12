@@ -17,23 +17,17 @@ echo "COMFY_UI_DIR = %COMFY_UI_DIR%"
 REM Check for NVIDIA GPU
 wmic path win32_VideoController get name | findstr /I "NVIDIA" >nul
 if %errorlevel%==0 (
-    echo "NVIDIA GPU detected."
+    echo NVIDIA GPU detected.
 ) else (
-    echo "No NVIDIA GPU detected."
+    echo No NVIDIA GPU detected.
 )
-
-REM New torch seems to be incompatible falling back to 2.0.1+cu118 and 0.15.2+cu118
-
-REM old stuff.... pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" --index-url https://download.pytorch.org/whl/cu118
-
-REM pip install "xformers==0.0.22"
 
 REM Prompt user for choice
 :choice
 set /p user_choice=Do you want to update the GPU or CPU version (G/C)? 
 if /I "%user_choice%"=="G" (
     set venv_dir=venv
-    set install_cmd="torch==2.0.1+cu118" "torchvision==0.15.2+cu118" --index-url https://download.pytorch.org/whl/cu118
+    set install_cmd=pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" --index-url https://download.pytorch.org/whl/cu118
     echo "Disabling xformers install because of dependency problems..."
     set install_xformers=false
 ) else if /I "%user_choice%"=="C" (
@@ -61,14 +55,12 @@ if exist %venv_dir%\Scripts\activate (
 
 %python_cmd% -m pip install --upgrade pip
 
-cd COMFY_UI_DIR
+cd "COMFY_UI_DIR"
 
 pip uninstall -y torch torchvision xformers torchaudio
 
 REM Install chosen version of torch and torchvision
 %install_cmd%
-
-REM requirements are handed automatically now as needed basis DEPRECATED: pip install -r requirements.txt
 
 if "%install_xformers%"=="true" (
     pip install xformers
