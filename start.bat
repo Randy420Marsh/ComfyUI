@@ -40,6 +40,6 @@ python -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attent
 
 ::--use-pytorch-cross-attention
 
-::python -s main.py --dont-upcast-attention --port 4434 --highvram --use-pytorch-cross-attention --gpu-only
+::python -s main.py --dont-upcast-attention --port 4434 --medvram --use-pytorch-cross-attention --gpu-only
 
 pause
