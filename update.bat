@@ -10,6 +10,17 @@ set "COMFY_UI_DIR=%CD%"
 
 echo COMFY_UI_DIR = %COMFY_UI_DIR%
 
+set python="C:\\Users\\John\\AppData\\Local\\Programs\\Python\\Python310\\python.exe"
+
+set python3="C:\\Users\\John\\AppData\\Local\\Programs\\Python\\Python310\\python.exe"
+
+echo "venv activated"
+python --version
+
+set "PATH=%VIRTUAL_ENV%\Scripts;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64;%PATH%"
+
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+
 IF exist ./venv (call .\venv\scripts\activate.bat) ELSE ("python" -m venv venv && call .\venv\scripts\activate.bat)
 
 python --version
@@ -20,7 +31,7 @@ pip uninstall -y torch torchvision xformers
 
 REM pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" "xformers-0.0.23.post1" --index-url https://download.pytorch.org/whl/cu118
 
-pip install "torch==2.1.2" "torchvision==0.16.2" "xformers==0.0.23.post1" --index-url https://download.pytorch.org/whl/cu118
+pip install "torch==2.1.2" "torchvision==0.16.2" "torchaudio==2.1.2+cu118" "xformers==0.0.23.post1" --index-url https://download.pytorch.org/whl/cu118
 
 git pull
 
@@ -51,6 +62,7 @@ set "repos[19]=https://github.com/Randy420Marsh/ComfyUI-AnimateDiff-Evolved.git"
 set "repos[20]=https://github.com/Randy420Marsh/ComfyUI_FizzNodes.git"
 set "repos[21]=https://github.com/Randy420Marsh/ComfyUI-VideoHelperSuite.git"
 set "repos[22]=https://github.com/Randy420Marsh/ComfyUI-Advanced-ControlNet.git"
+set "repos[23]=https://github.com/Randy420Marsh/human-parser-comfyui-node.git"
 
 
 for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22) do (
@@ -126,12 +138,16 @@ pip install -r  %CUSTOM_NODES_DIR%\ComfyUI_FizzNodes\requirements.txt
 
 pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-VideoHelperSuite\requirements.txt
 
+pip install -r  %CUSTOM_NODES_DIR%\human-parser-comfyui-node\requirements.txt
+
 REM pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Advanced-ControlNet\requirements.txt
 
 
 echo Fixing dependencies...
 
-pip install "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics"
+pip install -r requirements.txt
+
+pip install "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" setuptools==72.1.0 torchsde aiohttp spacy spandrel kornia"
 
 REM This should fix broken/corrupted install...
 REM pip install --force-reinstall "scikit-learn-intelex" " numpy==1.26.4" "thinc<8.4.0,>=8.3.0" "daal==2024.7.0" "daal4py==2024.7.0" "ultralytics"
