@@ -46,8 +46,7 @@ REM echo %PATH%
 ::#export controlnet_dir="$SD_ROOT_PATH//models//ControlNet"
 ::#export controlnet_annotator_models_path="$SD_ROOT_PATH//models//ControlNet//annotator//models"
 
-python -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention --gpu-only
-
+python -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention --highvram
 ::--use-pytorch-cross-attention
 
 ::python -s main.py --dont-upcast-attention --port 4434 --medvram --use-pytorch-cross-attention --gpu-only
