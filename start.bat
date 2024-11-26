@@ -37,9 +37,9 @@ set "PATH=%VIRTUAL_ENV%\Scripts;C:\Program Files (x86)\Microsoft Visual Studio\2
 
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 
-REM set "ninja.exe=E:\AI\ComfyUI\venv\Scripts\ninja.exe"
+set "ninja.exe=E:\AI\ComfyUI\venv\Scripts\ninja.exe"
 
-REM set "cl.exe=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\bin\Hostx64\x64\cl.exe"
+set "cl.exe=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\bin\Hostx64\x64\cl.exe"
 
 REM echo %PATH%
 

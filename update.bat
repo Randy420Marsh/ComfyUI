@@ -152,6 +152,10 @@ pip install "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ult
 REM This should fix broken/corrupted install...
 REM pip install --force-reinstall "scikit-learn-intelex" " numpy==1.26.4" "thinc<8.4.0,>=8.3.0" "daal==2024.7.0" "daal4py==2024.7.0" "ultralytics"
 
+echo "Copy python libs to venv"
+
+copy "C:\Program Files\Python310\libs\*" "%COMFY_UI_DIR%\venv\Scripts\libs\"
+
 echo "Update/install finished 2/2..."
 
 endlocal
