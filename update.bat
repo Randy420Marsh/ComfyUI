@@ -142,7 +142,6 @@ pip install -r  %CUSTOM_NODES_DIR%\human-parser-comfyui-node\requirements.txt
 
 REM pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Advanced-ControlNet\requirements.txt
 
-
 echo Fixing dependencies...
 
 pip install -r requirements.txt
@@ -154,9 +153,11 @@ REM pip install --force-reinstall "scikit-learn-intelex" " numpy==1.26.4" "thinc
 
 echo "Copy python libs to venv"
 
+mkdir "%COMFY_UI_DIR%\venv\Scripts\libs\"
+
 copy "C:\Program Files\Python310\libs\*" "%COMFY_UI_DIR%\venv\Scripts\libs\"
 
-echo "Update/install finished 2/2..."
+echo Update/install finished 2/2...
 
 endlocal
 pause
