@@ -21,3 +21,5 @@ kornia>=0.7.1
 spandrel
 soundfile
 av
+onnxruntime-gpu
+tcmalloc
