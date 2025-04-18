@@ -64,9 +64,10 @@ set "repos[23]=https://github.com/Randy420Marsh/human-parser-comfyui-node.git"
 set "repos[24]=https://github.com/Randy420Marsh/ComfyUI-Allor.git"
 set "repos[25]=https://github.com/Randy420Marsh/ControlNet-LLLite-ComfyUI.git"
 set "repos[26]=https://github.com/Randy420Marsh/ComfyUI-WD14-Tagger.git"
+set "repos[27]=https://github.com/Randy420Marsh/ComfyUI_essentials.git"
 
 
-for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26) do (
+for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27) do (
     set "repo_url=!repos[%%i]!"
     for %%j in ("!repo_url!") do (
         set "repo_name=%%~nj"
@@ -123,27 +124,29 @@ REM cd %CUSTOM_NODES_DIR%\comfy_controlnet_preprocessors
 
 cd %COMFY_UI_DIR%
 
-pip install -r  %CUSTOM_NODES_DIR%\comfyui_controlnet_aux\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\comfyui_controlnet_aux\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\comfyui-dynamicprompts\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\comfyui-dynamicprompts\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\efficiency-nodes-comfyui\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\efficiency-nodes-comfyui\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Impact-Pack\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\ComfyUI-Impact-Pack\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\nui-suite\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\nui-suite\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\was-node-suite-comfyui\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\was-node-suite-comfyui\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\ComfyUI_FizzNodes\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\ComfyUI_FizzNodes\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-VideoHelperSuite\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\ComfyUI-VideoHelperSuite\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\human-parser-comfyui-node\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\human-parser-comfyui-node\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Allor\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\ComfyUI-Allor\requirements.txt
 
-pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-WD14-Tagger\requirements.txt
+pip install -r %CUSTOM_NODES_DIR%\ComfyUI-WD14-Tagger\requirements.txt
+
+pip install -r %CUSTOM_NODES_DIR%\ComfyUI_essentials\requirements.txt
 
 REM pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Advanced-ControlNet\requirements.txt
 
