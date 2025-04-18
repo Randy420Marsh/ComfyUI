@@ -4,6 +4,10 @@
 MAX_THREADS=$(nproc)
 
 # Set the environment variables
+
+#Disable mmap because it is not supported on ntfs partitions, enable or uncomment if using ext filesystem for better performance
+export COMFYUI_DISABLE_MMAP=1
+
 export omp_set_max_active_levels=$MAX_THREADS
 export MKL_NUM_THREADS=$MAX_THREADS
 
