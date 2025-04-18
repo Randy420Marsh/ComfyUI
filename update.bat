@@ -29,9 +29,7 @@ python.exe -m pip install --upgrade pip
 
 pip uninstall -y torch torchvision xformers
 
-REM pip install "torch==2.0.1+cu118" "torchvision==0.15.2+cu118" "xformers-0.0.23.post1" --index-url https://download.pytorch.org/whl/cu118
-
-pip install "torch==2.1.2" "torchvision==0.16.2" "torchaudio==2.1.2+cu118" "xformers==0.0.23.post1" --index-url https://download.pytorch.org/whl/cu118
+pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+cu121" "xformers==0.0.23.post1" --index-url https://download.pytorch.org/whl/cu121
 
 git pull
 
@@ -153,7 +151,7 @@ echo Fixing dependencies...
 
 pip install -r requirements.txt
 
-pip install "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" setuptools==72.1.0 torchsde aiohttp spacy spandrel kornia av 
+pip install "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av 
 
 REM "onnx==1.17.0"
 
