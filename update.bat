@@ -65,9 +65,10 @@ set "repos[24]=https://github.com/Randy420Marsh/ComfyUI-Allor.git"
 set "repos[25]=https://github.com/Randy420Marsh/ControlNet-LLLite-ComfyUI.git"
 set "repos[26]=https://github.com/Randy420Marsh/ComfyUI-WD14-Tagger.git"
 set "repos[27]=https://github.com/Randy420Marsh/ComfyUI_essentials.git"
+set "repos[28]=https://github.com/Randy420Marsh/comfy_mtb.git"
 
 
-for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27) do (
+for %%i in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28) do (
     set "repo_url=!repos[%%i]!"
     for %%j in ("!repo_url!") do (
         set "repo_name=%%~nj"
@@ -147,6 +148,8 @@ pip install -r %CUSTOM_NODES_DIR%\ComfyUI-Allor\requirements.txt
 pip install -r %CUSTOM_NODES_DIR%\ComfyUI-WD14-Tagger\requirements.txt
 
 pip install -r %CUSTOM_NODES_DIR%\ComfyUI_essentials\requirements.txt
+
+pip install -r %CUSTOM_NODES_DIR%\comfy_mtb\requirements.txt
 
 REM pip install -r  %CUSTOM_NODES_DIR%\ComfyUI-Advanced-ControlNet\requirements.txt
 

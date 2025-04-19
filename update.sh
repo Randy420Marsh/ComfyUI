@@ -62,7 +62,8 @@ repos=("https://github.com/Randy420Marsh/ComfyUI_ADV_CLIP_emb.git"
 "https://github.com/Randy420Marsh/ComfyUI-Allor.git"
 "https://github.com/Randy420Marsh/ControlNet-LLLite-ComfyUI.git"
 "https://github.com/Randy420Marsh/ComfyUI-WD14-Tagger.git"
-"https://github.com/Randy420Marsh/ComfyUI_essentials.git")
+"https://github.com/Randy420Marsh/ComfyUI_essentials.git"
+"https://github.com/Randy420Marsh/comfy_mtb.git")
 
 for repo_url in "${repos[@]}"; do
     repo_name=$(basename "${repo_url}" .git)
@@ -134,6 +135,8 @@ pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Allor/requirements.txt"
 pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-WD14-Tagger/requirements.txt"
 
 pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_essentials/requirements.txt"
+
+pip install -r "${CUSTOM_NODES_DIR}/custom_nodes/comfy_mtb/requirements.txt"
 
 
 pip install "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21"
