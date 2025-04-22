@@ -24,4 +24,4 @@ spandrel
 soundfile
 av
 onnxruntime-gpu
-#tcmalloc
+tcmalloc
