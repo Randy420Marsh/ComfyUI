@@ -4,7 +4,7 @@
 #config for a1111 ui
 #all you have to do is change the base_path to where yours is installed
 a111:
-    base_path: path/to/stable-diffusion-webui/
+    base_path: /media/john/20TB/AI/stable_diffusion_models_and_vae
 
     checkpoints: models/Stable-diffusion
     configs: models/Stable-diffusion
@@ -16,13 +16,20 @@ a111:
                   models/ESRGAN
                   models/RealESRGAN
                   models/SwinIR
-    embeddings: embeddings
+    embeddings: models/embeddings
     hypernetworks: models/hypernetworks
     controlnet: models/ControlNet
+    #update the sam node to read from location
+    #sams:  models/sams
+    #schp:  models/schp
 
 #config for comfyui
 #your base path should be either an existing comfy install or a central folder where you store all of your models, loras, etc.
 
+comfyui: # Add or uncomment this section
+    base_path: /media/john/20TB/AI/stable_diffusion_models_and_vae # Set base_path to where your models are
+    animatediff_models: models/animatediff_models # loads models now from here
+    ultralytics: models/ultralytics #loads yolo models from here
 #comfyui:
 #     base_path: path/to/comfyui/
 #     # You can use is_default to mark that these folders should be listed first, and used as the default dirs for eg downloads
