@@ -53,9 +53,19 @@ echo "Current User: $USER"
 
 #Custom AUTOMATIC1111 webui root path
 
+COMFYUI_PATH=$PWD
+
+export COMFYUI_PATH=$PWD
+
 SD_ROOT_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
 
 export SD_ROOT_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
+
+COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
+
+export COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
+
+cd $PWD
 
 echo "Current active SD root path:"
 
