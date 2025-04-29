@@ -93,6 +93,8 @@ echo "Launching..."
 
 python3 --version
 
+echo "To disable comfy registry update set network_mode = private in ComfyUI/user/default/ComfyUI-Manager/config.ini"
+
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
