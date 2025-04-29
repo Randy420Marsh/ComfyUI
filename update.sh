@@ -140,6 +140,9 @@ pip install -r requirements.txt
 
 pip uninstall onnxruntime-gpu onnxruntime
 
-pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+#for windows
+#pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+
+pip install onnxruntime-gpu 
 
 echo "Update/install finished 2/2..."
