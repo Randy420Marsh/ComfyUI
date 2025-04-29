@@ -18,9 +18,9 @@ export TRANSFORMRRS_OFFLINE=1
 
 echo "Using $MAX_THREADS threads for OMP and MKL"
 
-export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so:$LD_PRELOAD
+export LD_PRELOAD=/usr/local/lib/libjemalloc.so:$LD_PRELOAD
 export MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms: 60000,muzzy_decay_ms:60000"
-export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
 
 #export model_args.use_multiprocessing=False
 
@@ -96,6 +96,6 @@ python3 --version
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention
+python3 -s main.py --dont-upcast-attention --port 4434 --medvram --use-pytorch-cross-attention
 
 #python3 -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention

@@ -17,19 +17,9 @@ python --version
 
 read -p "Press Enter to continue..."
 
-pip uninstall -y torch torchvision xformers
-
-pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+cu121" "xformers==0.0.23.post1" --index-url https://download.pytorch.org/whl/cu121
-
-pip install "xformers==0.0.23.post1"
-
 python -m pip install --upgrade pip
 
 git pull
-
-pip install -r requirements.txt
-
-pip install "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av 
 
 cd custom_nodes
 
@@ -68,14 +58,14 @@ repos=("https://github.com/Randy420Marsh/ComfyUI_ADV_CLIP_emb.git"
 for repo_url in "${repos[@]}"; do
     repo_name=$(basename "${repo_url}" .git)
 
-    if [ -d "${repo_name}$1" ]; then
+    if [ -d "${repo_name}" ]; then # Removed potential extra argument $1
         echo "Updating $repo_name..."
-        pushd "${repo_name}$1"
+        pushd "${repo_name}" # Removed potential extra argument $1
         git pull
         popd
     else
         echo "Cloning $repo_name..."
-        git clone "${repo_url}" "${repo_name}$1"
+        git clone "${repo_url}" "${repo_name}" # Removed potential extra argument $1
     fi
 done
 
@@ -85,14 +75,14 @@ cd custom_nodes
 repo_url="https://github.com/Randy420Marsh/ComfyUI_UltimateSDUpscale.git --recursive"
 repo_name=$(basename "${repo_url}" .git)
 
-if [ -d "${repo_name}$1" ]; then
+if [ -d "${repo_name}" ]; then # Removed potential extra argument $1
     echo "Updating $repo_name..."
-    pushd "${repo_name}$1"
+    pushd "${repo_name}" # Removed potential extra argument $1
     git pull
     popd
 else
     echo "Cloning $repo_name..."
-    git clone "${repo_url}" "${repo_name}$1"
+    git clone "${repo_url}" "${repo_name}" # Removed potential extra argument $1
 fi
 
 cd "${COMFY_UI_DIR}"
@@ -128,7 +118,7 @@ pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_FizzNodes/requirements.txt"
 
 pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-VideoHelperSuite/requirements.txt"
 
-pip install -r "${CUSTOM_NODES_DIR}/human-parser-comfyui-node/requirements.txt"
+pip install -r "${CUSTOM_NODES_DIR}/human-parser-comfyui-node-in-pure-python/requirements.txt"
 
 pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Allor/requirements.txt"
 
@@ -136,10 +126,15 @@ pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-WD14-Tagger/requirements.txt"
 
 pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_essentials/requirements.txt"
 
-pip install -r "${CUSTOM_NODES_DIR}/custom_nodes/comfy_mtb/requirements.txt"
+pip install -r "${CUSTOM_NODES_DIR}/comfy_mtb/requirements.txt"
 
+pip uninstall -y torch torchvision xformers
 
-pip install "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21"
+pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+cu121" --index-url https://download.pytorch.org/whl/cu121
+
+pip install "xformers" # Removed stray quote
+
+pip install "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av pynvml
 
 pip install -r requirements.txt
 
