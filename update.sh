@@ -138,4 +138,8 @@ pip install "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21" "scikit-learn-intelex" "n
 
 pip install -r requirements.txt
 
+pip uninstall onnxruntime-gpu onnxruntime
+
+pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+
 echo "Update/install finished 2/2..."

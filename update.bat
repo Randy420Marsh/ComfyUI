@@ -29,7 +29,7 @@ python.exe -m pip install --upgrade pip
 
 pip uninstall -y torch torchvision xformers
 
-pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+cu121" "xformers==0.0.23.post1" --index-url https://download.pytorch.org/whl/cu121
+pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+cu121" --index-url https://download.pytorch.org/whl/cu121
 
 git pull
 
@@ -164,7 +164,9 @@ REM "onnx==1.17.0"
 REM This should fix broken/corrupted install...
 REM pip install --force-reinstall "scikit-learn-intelex" "numpy==1.26.4" "thinc<8.4.0,>=8.3.0" "daal==2024.7.0" "daal4py==2024.7.0" "ultralytics"
 
-pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-11/pypi/simple/
+pip uninstall onnxruntime-gpu onnxruntime
+
+pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 REM onnx instructions: https://onnxruntime.ai/docs/install/
 
