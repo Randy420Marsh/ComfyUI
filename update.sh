@@ -53,7 +53,13 @@ repos=("https://github.com/Randy420Marsh/ComfyUI_ADV_CLIP_emb.git"
 "https://github.com/Randy420Marsh/ControlNet-LLLite-ComfyUI.git"
 "https://github.com/Randy420Marsh/ComfyUI-WD14-Tagger.git"
 "https://github.com/Randy420Marsh/ComfyUI_essentials.git"
-"https://github.com/Randy420Marsh/comfy_mtb.git")
+"https://github.com/Randy420Marsh/comfy_mtb.git"
+"https://github.com/Randy420Marsh/ComfyUI-Yolo-World-EfficientSAM.git"  
+"https://github.com/Randy420Marsh/ComfyUI-CLIPSeg.git"
+"https://github.com/Randy420Marsh/ComfyUI-KJNodes.git"
+"https://github.com/Randy420Marsh/ComfyUI-Impact-Subpack.git")
+
+
 
 for repo_url in "${repos[@]}"; do
     repo_name=$(basename "${repo_url}" .git)
@@ -128,6 +134,16 @@ pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_essentials/requirements.txt"
 
 pip install -r "${CUSTOM_NODES_DIR}/comfy_mtb/requirements.txt"
 
+pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Yolo-World-EfficientSAM/requirements.txt"
+
+pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-CLIPSeg/requirements.txt"
+
+pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-KJNodes/requirements.txt"
+
+
+cd ${CUSTOM_NODES_DIR}/ComfyUI-Impact-Subpack
+python -s install.py
+
 pip uninstall -y torch torchvision xformers
 
 pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+cu121" --index-url https://download.pytorch.org/whl/cu121
@@ -140,9 +156,8 @@ pip install -r requirements.txt
 
 pip uninstall onnxruntime-gpu onnxruntime
 
-#for windows
-#pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+pip install onnxruntime-gpu inference-gpu opencv-python-headless
 
-pip install onnxruntime-gpu 
+#pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "Update/install finished 2/2..."
