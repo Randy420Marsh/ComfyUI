@@ -146,11 +146,13 @@ python -s install.py
 
 pip uninstall -y torch torchvision xformers
 
-pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+cu121" --index-url https://download.pytorch.org/whl/cu121
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 pip install "xformers" # Removed stray quote
 
 pip install "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av pynvml
+
+pip install --upgrade inference-gpu "numpy<2,>=1"
 
 pip install -r requirements.txt
 

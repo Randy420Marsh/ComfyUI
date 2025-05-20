@@ -6,6 +6,8 @@ MAX_THREADS=$(nproc)
 # Set the environment variables
 
 #Disable mmap because it is not supported on ntfs partitions, enable or uncomment if using ext filesystem for better performance
+#this is defined in ./comfy/utils.py at line 54.
+
 export COMFYUI_DISABLE_MMAP=1
 
 export omp_set_max_active_levels=$MAX_THREADS
@@ -24,7 +26,7 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
 
 #export model_args.use_multiprocessing=False
 
-export LD_LIBRARY_PATH=/usr/local/cuda-12.1/lib64
+export LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64
 
 #Uncomment as needed...
 
@@ -85,9 +87,9 @@ echo "venv activated"
 
 export SAFETENSORS_FAST_GPU=1
 
-python="python3.10"
+python="python3.12.3"
 
-python3="python3.10"
+python3="python3.12.3"
 
 echo "Launching..."
 
