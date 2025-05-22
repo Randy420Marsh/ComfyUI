@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-import os
+
 import torch
 import math
 import struct
@@ -28,6 +28,9 @@ import logging
 import itertools
 from torch.nn.functional import interpolate
 from einops import rearrange
+from comfy.cli_args import args
+
+MMAP_TORCH_FILES = args.mmap_torch_files
 
 ALWAYS_SAFE_LOAD = False
 if hasattr(torch.serialization, "add_safe_globals"):  # TODO: this was added in pytorch 2.4, the unsafe path should be removed once earlier versions are deprecated
@@ -50,38 +53,31 @@ def load_torch_file(ckpt, safe_load=False, device=None, return_metadata=False):
     if device is None:
         device = torch.device("cpu")
     metadata = None
-
-    disable_mmap = os.getenv("COMFYUI_DISABLE_MMAP", "0") == "1"
-
     if ckpt.lower().endswith(".safetensors") or ckpt.lower().endswith(".sft"):
-        if disable_mmap:
-            # Fallback: no mmap
-            sd = safetensors.torch.load(open(ckpt, 'rb').read())
-        else:
-            # Default: use safe_open with mmap
-            try:
-                with safetensors.safe_open(ckpt, framework="pt", device=device.type) as f:
-                    sd = {}
-                    for k in f.keys():
-                        sd[k] = f.get_tensor(k)
-                    if return_metadata:
-                        metadata = f.metadata()
-            except Exception as e:
-                if len(e.args) > 0:
-                    message = e.args[0]
-                    if "HeaderTooLarge" in message:
-                        raise ValueError(f"{message}\n\nFile path: {ckpt}\n\nThe safetensors file is corrupt or invalid. Make sure this is actually a safetensors file and not a ckpt or pt or other filetype.")
-                    if "MetadataIncompleteBuffer" in message:
-                        raise ValueError(f"{message}\n\nFile path: {ckpt}\n\nThe safetensors file is corrupt/incomplete. Check the file size and make sure you have copied/downloaded it correctly.")
-                raise e
+        try:
+            with safetensors.safe_open(ckpt, framework="pt", device=device.type) as f:
+                sd = {}
+                for k in f.keys():
+                    sd[k] = f.get_tensor(k)
+                if return_metadata:
+                    metadata = f.metadata()
+        except Exception as e:
+            if len(e.args) > 0:
+                message = e.args[0]
+                if "HeaderTooLarge" in message:
+                    raise ValueError("{}\n\nFile path: {}\n\nThe safetensors file is corrupt or invalid. Make sure this is actually a safetensors file and not a ckpt or pt or other filetype.".format(message, ckpt))
+                if "MetadataIncompleteBuffer" in message:
+                    raise ValueError("{}\n\nFile path: {}\n\nThe safetensors file is corrupt/incomplete. Check the file size and make sure you have copied/downloaded it correctly.".format(message, ckpt))
+            raise e
     else:
-        # Handle traditional torch files
-        if safe_load or 'ALWAYS_SAFE_LOAD' in globals() and ALWAYS_SAFE_LOAD:
-            pl_sd = torch.load(ckpt, map_location=device, weights_only=True)
+        torch_args = {}
+        if MMAP_TORCH_FILES:
+            torch_args["mmap"] = True
+
+        if safe_load or ALWAYS_SAFE_LOAD:
+            pl_sd = torch.load(ckpt, map_location=device, weights_only=True, **torch_args)
         else:
             pl_sd = torch.load(ckpt, map_location=device, pickle_module=comfy.checkpoint_pickle)
-        if "global_step" in pl_sd:
-            logging.debug(f"Global Step: {pl_sd['global_step']}")
         if "state_dict" in pl_sd:
             sd = pl_sd["state_dict"]
         else:
@@ -92,7 +88,6 @@ def load_torch_file(ckpt, safe_load=False, device=None, return_metadata=False):
                     sd = pl_sd
             else:
                 sd = pl_sd
-
     return (sd, metadata) if return_metadata else sd
 
 def save_torch_file(sd, ckpt, metadata=None):
