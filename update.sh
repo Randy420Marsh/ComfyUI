@@ -156,7 +156,7 @@ pip install --upgrade inference-gpu "numpy<2,>=1"
 
 pip install -r requirements.txt
 
-pip uninstall onnxruntime-gpu onnxruntime
+pip uninstall onnxruntime-gpu onnxruntime -y
 
 pip install onnxruntime-gpu inference-gpu opencv-python-headless
 
