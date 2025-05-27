@@ -145,6 +145,8 @@ parser.add_argument("--fast", nargs="*", type=PerformanceFeature, help="Enable s
 
 parser.add_argument("--mmap-torch-files", action="store_true", help="Use mmap when loading ckpt/pt files.")
 
+parser.add_argument("--disable-mmap", action="store_true", help="When load .safetensors or .sft model sometimes.")
+
 parser.add_argument("--dont-print-server", action="store_true", help="Don't print server output.")
 parser.add_argument("--quick-test-for-ci", action="store_true", help="Quick test for CI.")
 parser.add_argument("--windows-standalone-build", action="store_true", help="Windows standalone build: Enable convenient things that most people using the standalone windows build will probably enjoy (like auto opening the page on startup).")
