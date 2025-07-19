@@ -40,7 +40,7 @@ try:
     ax.set_title(f'{gpu_name} (GPU {GPU_INDEX}) Memory Usage (MB) - Total: {total_memory_mb:.0f} MB')
     ax.set_ylim(0, total_memory_mb * 1.1) # Set Y-limit based on total GPU memory
 
-    print(f"Monitoring GPU {GPU_INDEX} ({gpu_name}). Press Ctrl+C to stop.")
+    logging.info(f"Monitoring GPU {GPU_INDEX} ({gpu_name}). Press Ctrl+C to stop.")
 
     # Monitoring loop
     while True:
@@ -57,7 +57,7 @@ try:
         gpu_memory_usage_mb.append(used_memory_mb)
 
         # Print current usage to console (for debugging)
-        print(f"Time: {current_time:.2f}s, Used Memory: {used_memory_mb:.2f} MB")
+        logging.debug(f"Time: {current_time:.2f}s, Used Memory: {used_memory_mb:.2f} MB")
 
 
         # Update the plot data
@@ -77,9 +77,9 @@ try:
 
 
 except pynvml.NVMLError as err:
-    print(f"NVML Error: {err}")
+    logging.error(f"NVML Error: {err}")
 except KeyboardInterrupt:
-    print("\nMonitoring stopped by user.")
+    logging.info("Monitoring stopped by user.")
 except Exception as e:
     print(f"An error occurred: {e}")
     # Keep the plot window open if an unexpected error occurs, for inspection
@@ -90,7 +90,7 @@ finally:
     # Shutdown NVML
     try:
         pynvml.nvmlShutdown()
-        print("NVML shutdown.")
+        logging.info("NVML shutdown.")
     except pynvml.NVMLError as err:
         print(f"Error during NVML shutdown: {err}")
 
