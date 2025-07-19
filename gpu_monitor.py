@@ -81,7 +81,7 @@ except pynvml.NVMLError as err:
 except KeyboardInterrupt:
     logging.info("Monitoring stopped by user.")
 except Exception as e:
-    print(f"An error occurred: {e}")
+    logging.error(f"An error occurred: {e}")
     # Keep the plot window open if an unexpected error occurs, for inspection
     plt.ioff()
     plt.show()
@@ -92,7 +92,7 @@ finally:
         pynvml.nvmlShutdown()
         logging.info("NVML shutdown.")
     except pynvml.NVMLError as err:
-        print(f"Error during NVML shutdown: {err}")
+        logging.error(f"Error during NVML shutdown: {err}")
 
     # Close the plot window if it's still open
     if plt.fignum_exists(fig.number):
