@@ -133,11 +133,11 @@ pip install -r requirements.txt
 
 pip uninstall onnxruntime-gpu onnxruntime -y
 
-pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" --index-url https://download.pytorch.org/whl/cu128
-
 pip uninstall -y torch torchvision torchaudio xformers
 
-pip install --upgrade 'inference[sam]' 'inference[grounding-dino]' 'inference[transformers]' "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools" "aiortc" "av"  "albumentations==1.4.4" "pydantic>=2.9.2" "sam>=2" xformers torchsde aiohttp spacy spandrel kornia av pynvml
+pip install --upgrade 'inference[sam]' 'inference[grounding-dino]' 'inference[transformers]' "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools" "aiortc" "av"  "albumentations==1.4.4" "pydantic>=2.9.2" "sam>=2" torchsde aiohttp spacy spandrel kornia av pynvml
+
+pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" --index-url https://download.pytorch.org/whl/cu128
 
 #pip install "xformers" # Removed stray quote
 

@@ -28,3 +28,14 @@ soundfile
 av>=14.2.0
 pydantic~=2.0
 pydantic-settings~=2.0
+
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.7.1+cu128
+torchaudio==2.7.1+cu128
+torchvision==0.22.1+cu128
+
+#Check conflicts with:
+
+#pip install pipdeptree
+#pipdeptree --warn fail
+#pip check
