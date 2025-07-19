@@ -2,6 +2,7 @@ import pynvml
 import matplotlib.pyplot as plt
 import time
 import collections
+import logging
 
 # Configuration
 GPU_INDEX = 0  # Change this if you have multiple GPUs and want to monitor a different one (0 is usually the primary)
