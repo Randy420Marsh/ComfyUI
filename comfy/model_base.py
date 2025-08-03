@@ -106,10 +106,12 @@ def model_sampling(model_config, model_type):
     return ModelSampling(model_config)
 
 
-def convert_tensor(extra, dtype):
+def convert_tensor(extra, dtype, device):
     if hasattr(extra, "dtype"):
         if extra.dtype != torch.int and extra.dtype != torch.long:
-            extra = extra.to(dtype)
+            extra = extra.to(dtype=dtype, device=device)
+        else:
+            extra = extra.to(device=device)
     return extra
 
 
@@ -169,20 +171,21 @@ class BaseModel(torch.nn.Module):
             dtype = self.manual_cast_dtype
 
         xc = xc.to(dtype)
+        device = xc.device
         t = self.model_sampling.timestep(t).float()
         if context is not None:
-            context = context.to(dtype)
+            context = context.to(dtype=dtype, device=device)
 
         extra_conds = {}
         for o in kwargs:
             extra = kwargs[o]
 
             if hasattr(extra, "dtype"):
-                extra = convert_tensor(extra, dtype)
+                extra = convert_tensor(extra, dtype, device)
             elif isinstance(extra, list):
                 ex = []
                 for ext in extra:
-                    ex.append(convert_tensor(ext, dtype))
+                    ex.append(convert_tensor(ext, dtype, device))
                 extra = ex
             extra_conds[o] = extra
 
@@ -1097,8 +1100,9 @@ class WAN21(BaseModel):
                 image[:, i: i + 16] = self.process_latent_in(image[:, i: i + 16])
             image = utils.resize_to_batch_size(image, noise.shape[0])
 
-        if not self.image_to_video or extra_channels == image.shape[1]:
-            return image
+        if extra_channels != image.shape[1] + 4:
+            if not self.image_to_video or extra_channels == image.shape[1]:
+                return image
 
         if image.shape[1] > (extra_channels - 4):
             image = image[:, :(extra_channels - 4)]
@@ -1181,6 +1185,31 @@ class WAN21_Camera(WAN21):
         if camera_conditions is not None:
             out['camera_conditions'] = comfy.conds.CONDRegular(camera_conditions)
         return out
+
+class WAN22(BaseModel):
+    def __init__(self, model_config, model_type=ModelType.FLOW, image_to_video=False, device=None):
+        super().__init__(model_config, model_type, device=device, unet_model=comfy.ldm.wan.model.WanModel)
+        self.image_to_video = image_to_video
+
+    def extra_conds(self, **kwargs):
+        out = super().extra_conds(**kwargs)
+        cross_attn = kwargs.get("cross_attn", None)
+        if cross_attn is not None:
+            out['c_crossattn'] = comfy.conds.CONDRegular(cross_attn)
+
+        denoise_mask = kwargs.get("concat_mask", kwargs.get("denoise_mask", None))
+        if denoise_mask is not None:
+            out["denoise_mask"] = comfy.conds.CONDRegular(denoise_mask)
+        return out
+
+    def process_timestep(self, timestep, x, denoise_mask=None, **kwargs):
+        if denoise_mask is None:
+            return timestep
+        temp_ts = (torch.mean(denoise_mask[:, :, :, :, :], dim=(1, 3, 4), keepdim=True) * timestep.view([timestep.shape[0]] + [1] * (denoise_mask.ndim - 1))).reshape(timestep.shape[0], -1)
+        return temp_ts
+
+    def scale_latent_inpaint(self, sigma, noise, latent_image, **kwargs):
+        return latent_image
 
 class Hunyuan3Dv2(BaseModel):
     def __init__(self, model_config, model_type=ModelType.FLOW, device=None):
