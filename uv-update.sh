@@ -6,18 +6,20 @@ echo "CUSTOM_NODES_DIR = $CUSTOM_NODES_DIR"
 COMFY_UI_DIR="$(pwd)"
 echo "COMFY_UI_DIR = $COMFY_UI_DIR"
 
-if [ -d "./venv" ]; then
-    source ./venv/bin/activate
+uv python pin 3.12
+
+if [ -d "./.venv" ]; then
+    source ./.venv/bin/activate
 else
-    python3.10 -m venv venv
-    source ./venv/bin/activate
+    uv venv --python3.12
+    source ./.venv/bin/activate
 fi
 
 python --version
 
 read -p "Press Enter to continue..."
 
-python -m pip install --upgrade pip
+uv pip install --upgrade pip
 
 #git pull
 
@@ -112,33 +114,48 @@ pip uninstall onnxruntime-gpu onnxruntime -y
 
 pip uninstall -y torch torchvision torchaudio xformers
 
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Manager/requirements.txt"
 
-pip install -r "${CUSTOM_NODES_DIR}/comfyui_controlnet_aux/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/comfyui-dynamicprompts/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/efficiency-nodes-comfyui/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Impact-Pack/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/nui-suite/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/was-node-suite-comfyui/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_FizzNodes/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-VideoHelperSuite/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/human-parser-comfyui-node-in-pure-python/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Allor/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-WD14-Tagger/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_essentials/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/comfy_mtb/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Yolo-World-EfficientSAM/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-CLIPSeg/requirements.txt"
-pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-KJNodes/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/comfyui_controlnet_aux/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/comfyui-dynamicprompts/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/efficiency-nodes-comfyui/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Impact-Pack/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/nui-suite/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/was-node-suite-comfyui/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_FizzNodes/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-VideoHelperSuite/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/human-parser-comfyui-node-in-pure-python/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Allor/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-WD14-Tagger/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_essentials/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/comfy_mtb/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Yolo-World-EfficientSAM/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-CLIPSeg/requirements.txt"
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-KJNodes/requirements.txt"
+
+uv pip install -r "${CUSTOM_NODES_DIR}/RES4LYF/requirements.txt"
+
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_Sonic/requirements.txt"
+
+uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_LayerStyle/requirements.txt"
+
 
 cd ${CUSTOM_NODES_DIR}/ComfyUI-Impact-Subpack
-python -s install.py
+uv pip install -r requirements.txt
+#uv python -s install.py
 
 cd "${COMFY_UI_DIR}"
 
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 
-pip install --upgrade "inference[sam]" "inference[grounding-dino]" "inference[transformers]" "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "thinc" "numpy==1.26.4"  "daal" "daal4py" "ultralytics" "setuptools" "aiortc~=1.9.0" "av==12.3.0"  "albumentations==1.4.4" "pydantic>=2.9.2" "sam>=2" "torchsde" "aiohttp<=3.10.11,>=3.9.0" "spandrel" "kornia" "pynvml" "onnxruntime==1.19.2" "onnxruntime-gpu==1.19.2" "opencv-python<=4.10.0.84,>=4.8.1.78" "peft>=0.15.0" "bitsandbytes==0.47.0" "pycuda" "spacy"
+uv pip install --upgrade "inference[sam]" "inference[grounding-dino]" "inference[transformers]" "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "thinc" "numpy==1.26.4"  "daal" "daal4py" "ultralytics" "setuptools" "aiortc~=1.9.0" "av==12.3.0"  "albumentations==1.4.4" "pydantic>=2.9.2" "torchsde" "aiohttp<=3.10.11,>=3.9.0" "spandrel" "kornia" "pynvml" "onnxruntime==1.19.2" "onnxruntime-gpu==1.19.2" "opencv-python<=4.10.0.84,>=4.8.1.78" "peft" "bitsandbytes" "pycuda" "spacy" "shapely"
 
-pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" "xformers" --index-url https://download.pytorch.org/whl/cu128
+uv pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" "xformers" --index-url https://download.pytorch.org/whl/cu128
+
+uv pip install --upgrade "numpy==1.26.4" "Pillow<10,>=9.0.0" "networkx<=3.4" "inference-gpu" "inference" "protobuf" "mediapipe" "pydantic" "pyparsing" "shapely" "dghs-imgutils" "scikit-learn"
+
+uv pip install --upgrade "numpy==1.26.4" "Pillow<10,>=9.0.0" "networkx<=3.4" "inference-gpu" "inference" "protobuf" "mediapipe" "pydantic" "pyparsing" "shapely" "dghs-imgutils" "scikit-learn"  "diffusers" "dashscope" "llama-cpp-python" "piexif" "chardet" "dghs-imgutils[gpu]" "pycryptodome"
+
+uv pip check
 
 echo "Update/install finished 2/2..."
