@@ -135,7 +135,7 @@ uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-KJNodes/requirements.txt"
 
 uv pip install -r "${CUSTOM_NODES_DIR}/RES4LYF/requirements.txt"
 
-uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_Sonic/requirements.txt"
+#uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_Sonic/requirements.txt"
 
 uv pip install -r "${CUSTOM_NODES_DIR}/ComfyUI_LayerStyle/requirements.txt"
 
