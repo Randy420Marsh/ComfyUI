@@ -150,11 +150,14 @@ uv pip install -r requirements.txt
 
 uv pip install --upgrade "inference[sam]" "inference[grounding-dino]" "inference[transformers]" "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "thinc" "numpy==1.26.4"  "daal" "daal4py" "ultralytics" "setuptools" "aiortc~=1.9.0" "av==12.3.0"  "albumentations==1.4.4" "pydantic>=2.9.2" "torchsde" "aiohttp<=3.10.11,>=3.9.0" "spandrel" "kornia" "pynvml" "onnxruntime==1.19.2" "onnxruntime-gpu==1.19.2" "opencv-python<=4.10.0.84,>=4.8.1.78" "peft" "bitsandbytes" "pycuda" "spacy" "shapely"
 
-uv pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" "xformers" --index-url https://download.pytorch.org/whl/cu128
+#uv pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" "xformers" --index-url https://download.pytorch.org/whl/cu128
 
-uv pip install --upgrade "numpy==1.26.4" "Pillow<10,>=9.0.0" "networkx<=3.4" "inference-gpu" "inference" "protobuf" "mediapipe" "pydantic" "pyparsing" "shapely" "dghs-imgutils" "scikit-learn"
+uv pip install --upgrade "torch" "torchaudio" "torchvision" "xformers" --index-url https://download.pytorch.org/whl/cu128
 
-uv pip install --upgrade "numpy==1.26.4" "Pillow<10,>=9.0.0" "networkx<=3.4" "inference-gpu" "inference" "protobuf" "mediapipe" "pydantic" "pyparsing" "shapely" "dghs-imgutils" "scikit-learn"  "diffusers" "dashscope" "llama-cpp-python" "piexif" "chardet" "dghs-imgutils[gpu]" "pycryptodome"
+uv pip install --upgrade "numpy==1.26.4" "Pillow<10,>=9.0.0" "networkx<=3.4" "inference-gpu" "inference" "protobuf" "mediapipe" "pydantic" "pyparsing" "shapely" "dghs-imgutils" "scikit-learn"  "diffusers" "dashscope" "llama-cpp-python" "piexif" "chardet" "dghs-imgutils[gpu]" "pycryptodome" "aiortc" "aiohttp" "mediapipe" "pyrfc6266" "opencv-contrib-python" "albucore" "rembg" "albumentations" "shapely" "supervision" "inference-gpu[yolo-world]<=0.47.0"
+
+ uv pip install --upgrade "numpy===1.26.4" inference inference-gpu mediapipe shapely pyparsing protobuf dghs-imgutils pyrfc6266
+
 
 uv pip check
 
