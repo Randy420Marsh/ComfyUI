@@ -41,7 +41,7 @@ AUTOMATIC1111_WEBUI="AUTOMATIC1111"
 ##########################################
 
 # python3 executable
-python_cmd="./venv/bin/python"
+python_cmd="./.venv/bin/python"
 
 ##########################################
 
@@ -81,7 +81,7 @@ export SAFETENSORS_FAST_GPU=1
 
 export PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512
 
-source ./venv/bin/activate
+source ./.venv/bin/activate
 
 echo "venv activated"
 
@@ -100,6 +100,6 @@ echo "To disable comfy registry update set network_mode = private in ComfyUI/use
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap 
+python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap
 
 #python3 -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention

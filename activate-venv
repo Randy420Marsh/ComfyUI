@@ -14,7 +14,7 @@ export COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
 
 cd $PWD
 
-source ./venv/bin/activate
+source ./.venv/bin/activate
 
 echo "venv activated"
 
