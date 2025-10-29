@@ -73,9 +73,10 @@ for repo_url in "${repos[@]}"; do
 done
 
 # Recursive repos
-cd custom_nodes
+#Brainiac over here...
+#cd custom_nodes
 
-repo_url="https://github.com/Randy420Marsh/ComfyUI_UltimateSDUpscale.git --recursive"
+repo_url="https://github.com/Randy420Marsh/ComfyUI_UltimateSDUpscale.git"
 repo_name=$(basename "${repo_url}" .git)
 
 if [ -d "${repo_name}" ]; then # Removed potential extra argument $1
@@ -85,7 +86,7 @@ if [ -d "${repo_name}" ]; then # Removed potential extra argument $1
     popd
 else
     echo "Cloning $repo_name..."
-    git clone "${repo_url}" "${repo_name}" # Removed potential extra argument $1
+    git clone --recursive "${repo_url}" "${repo_name}" # Removed potential extra argument $1
 fi
 
 cd "${COMFY_UI_DIR}"
