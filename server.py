@@ -35,6 +35,7 @@ from comfy_api.internal import _ComfyNodeInternal
 from app.user_manager import UserManager
 from app.model_manager import ModelFileManager
 from app.custom_node_manager import CustomNodeManager
+from app.subgraph_manager import SubgraphManager
 from typing import Optional, Union
 from api_server.routes.internal.internal_routes import InternalRoutes
 from protocol import BinaryEventTypes
@@ -47,6 +48,28 @@ async def send_socket_catch_exception(function, message):
         await function(message)
     except (aiohttp.ClientError, aiohttp.ClientPayloadError, ConnectionResetError, BrokenPipeError, ConnectionError) as err:
         logging.warning("send error: {}".format(err))
+
+# Track deprecated paths that have been warned about to only warn once per file
+_deprecated_paths_warned = set()
+
+@web.middleware
+async def deprecation_warning(request: web.Request, handler):
+    """Middleware to warn about deprecated frontend API paths"""
+    path = request.path
+
+    if path.startswith("/scripts/ui") or path.startswith("/extensions/core/"):
+        # Only warn once per unique file path
+        if path not in _deprecated_paths_warned:
+            _deprecated_paths_warned.add(path)
+            logging.warning(
+                f"[DEPRECATION WARNING] Detected import of deprecated legacy API: {path}. "
+                f"This is likely caused by a custom node extension using outdated APIs. "
+                f"Please update your extensions or contact the extension author for an updated version."
+            )
+
+    response: web.Response = await handler(request)
+    return response
+
 
 @web.middleware
 async def compress_body(request: web.Request, handler):
@@ -151,6 +174,7 @@ class PromptServer():
         self.user_manager = UserManager()
         self.model_file_manager = ModelFileManager()
         self.custom_node_manager = CustomNodeManager()
+        self.subgraph_manager = SubgraphManager()
         self.internal_routes = InternalRoutes(self)
         self.supports = ["custom_nodes_from_web"]
         self.prompt_queue = execution.PromptQueue(self)
@@ -159,7 +183,7 @@ class PromptServer():
         self.client_session:Optional[aiohttp.ClientSession] = None
         self.number = 0
 
-        middlewares = [cache_control]
+        middlewares = [cache_control, deprecation_warning]
         if args.enable_compress_response_body:
             middlewares.append(compress_body)
 
@@ -550,6 +574,8 @@ class PromptServer():
             vram_total, torch_vram_total = comfy.model_management.get_total_memory(device, torch_total_too=True)
             vram_free, torch_vram_free = comfy.model_management.get_free_memory(device, torch_free_too=True)
             required_frontend_version = FrontendManager.get_required_frontend_version()
+            installed_templates_version = FrontendManager.get_installed_templates_version()
+            required_templates_version = FrontendManager.get_required_templates_version()
 
             system_stats = {
                 "system": {
@@ -558,6 +584,8 @@ class PromptServer():
                     "ram_free": ram_free,
                     "comfyui_version": __version__,
                     "required_frontend_version": required_frontend_version,
+                    "installed_templates_version": installed_templates_version,
+                    "required_templates_version": required_templates_version,
                     "python_version": sys.version,
                     "pytorch_version": comfy.model_management.torch_version,
                     "embedded_python": os.path.split(os.path.split(sys.executable)[0])[1] == "python_embeded",
@@ -645,7 +673,14 @@ class PromptServer():
             max_items = request.rel_url.query.get("max_items", None)
             if max_items is not None:
                 max_items = int(max_items)
-            return web.json_response(self.prompt_queue.get_history(max_items=max_items))
+
+            offset = request.rel_url.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+            else:
+                offset = -1
+
+            return web.json_response(self.prompt_queue.get_history(max_items=max_items, offset=offset))
 
         @routes.get("/history/{prompt_id}")
         async def get_history_prompt_id(request):
@@ -786,6 +821,7 @@ class PromptServer():
         self.user_manager.add_routes(self.routes)
         self.model_file_manager.add_routes(self.routes)
         self.custom_node_manager.add_routes(self.routes, self.app, nodes.LOADED_MODULE_DIRS.items())
+        self.subgraph_manager.add_routes(self.routes, nodes.LOADED_MODULE_DIRS.items())
         self.app.add_subapp('/internal', self.internal_routes.get_app())
 
         # Prefix every route with /api for easier matching for delegation.

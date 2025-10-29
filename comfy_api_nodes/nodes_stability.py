@@ -2,7 +2,7 @@ from inspect import cleandoc
 from typing import Optional
 from typing_extensions import override
 
-from comfy_api.latest import ComfyExtension, io as comfy_io
+from comfy_api.latest import ComfyExtension, Input, IO
 from comfy_api_nodes.apis.stability_api import (
     StabilityUpscaleConservativeRequest,
     StabilityUpscaleCreativeRequest,
@@ -15,6 +15,10 @@ from comfy_api_nodes.apis.stability_api import (
     Stability_SD3_5_Model,
     Stability_SD3_5_GenerationMode,
     get_stability_style_presets,
+    StabilityTextToAudioRequest,
+    StabilityAudioToAudioRequest,
+    StabilityAudioInpaintRequest,
+    StabilityAudioResponse,
 )
 from comfy_api_nodes.apis.client import (
     ApiEndpoint,
@@ -23,10 +27,13 @@ from comfy_api_nodes.apis.client import (
     PollingOperation,
     EmptyRequest,
 )
-from comfy_api_nodes.apinode_utils import (
+from comfy_api_nodes.util import (
+    validate_audio_duration,
+    validate_string,
+    audio_input_to_mp3,
     bytesio_to_image_tensor,
     tensor_to_bytesio,
-    validate_string,
+    audio_bytes_to_audio_input,
 )
 
 import torch
@@ -49,20 +56,20 @@ def get_async_dummy_status(x: StabilityResultsGetResponse):
     return StabilityPollStatus.in_progress
 
 
-class StabilityStableImageUltraNode(comfy_io.ComfyNode):
+class StabilityStableImageUltraNode(IO.ComfyNode):
     """
     Generates images synchronously based on prompt and resolution.
     """
 
     @classmethod
     def define_schema(cls):
-        return comfy_io.Schema(
+        return IO.Schema(
             node_id="StabilityStableImageUltraNode",
             display_name="Stability AI Stable Image Ultra",
             category="api node/image/Stability AI",
             description=cleandoc(cls.__doc__ or ""),
             inputs=[
-                comfy_io.String.Input(
+                IO.String.Input(
                     "prompt",
                     multiline=True,
                     default="",
@@ -73,39 +80,39 @@ class StabilityStableImageUltraNode(comfy_io.ComfyNode):
                                     "is a value between 0 and 1. For example: `The sky was a crisp (blue:0.3) and (green:0.8)`" +
                                     "would convey a sky that was blue and green, but more green than blue.",
                 ),
-                comfy_io.Combo.Input(
+                IO.Combo.Input(
                     "aspect_ratio",
-                    options=[x.value for x in StabilityAspectRatio],
-                    default=StabilityAspectRatio.ratio_1_1.value,
+                    options=StabilityAspectRatio,
+                    default=StabilityAspectRatio.ratio_1_1,
                     tooltip="Aspect ratio of generated image.",
                 ),
-                comfy_io.Combo.Input(
+                IO.Combo.Input(
                     "style_preset",
                     options=get_stability_style_presets(),
                     tooltip="Optional desired style of generated image.",
                 ),
-                comfy_io.Int.Input(
+                IO.Int.Input(
                     "seed",
                     default=0,
                     min=0,
                     max=4294967294,
                     step=1,
-                    display_mode=comfy_io.NumberDisplay.number,
+                    display_mode=IO.NumberDisplay.number,
                     control_after_generate=True,
                     tooltip="The random seed used for creating the noise.",
                 ),
-                comfy_io.Image.Input(
+                IO.Image.Input(
                     "image",
                     optional=True,
                 ),
-                comfy_io.String.Input(
+                IO.String.Input(
                     "negative_prompt",
                     default="",
                     tooltip="A blurb of text describing what you do not wish to see in the output image. This is an advanced feature.",
                     force_input=True,
                     optional=True,
                 ),
-                comfy_io.Float.Input(
+                IO.Float.Input(
                     "image_denoise",
                     default=0.5,
                     min=0.0,
@@ -116,12 +123,12 @@ class StabilityStableImageUltraNode(comfy_io.ComfyNode):
                 ),
             ],
             outputs=[
-                comfy_io.Image.Output(),
+                IO.Image.Output(),
             ],
             hidden=[
-                comfy_io.Hidden.auth_token_comfy_org,
-                comfy_io.Hidden.api_key_comfy_org,
-                comfy_io.Hidden.unique_id,
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
             ],
             is_api_node=True,
         )
@@ -136,7 +143,7 @@ class StabilityStableImageUltraNode(comfy_io.ComfyNode):
         image: Optional[torch.Tensor] = None,
         negative_prompt: str = "",
         image_denoise: Optional[float] = 0.5,
-    ) -> comfy_io.NodeOutput:
+    ) -> IO.NodeOutput:
         validate_string(prompt, strip_whitespace=False)
         # prepare image binary if image present
         image_binary = None
@@ -186,44 +193,44 @@ class StabilityStableImageUltraNode(comfy_io.ComfyNode):
         image_data = base64.b64decode(response_api.image)
         returned_image = bytesio_to_image_tensor(BytesIO(image_data))
 
-        return comfy_io.NodeOutput(returned_image)
+        return IO.NodeOutput(returned_image)
 
 
-class StabilityStableImageSD_3_5Node(comfy_io.ComfyNode):
+class StabilityStableImageSD_3_5Node(IO.ComfyNode):
     """
     Generates images synchronously based on prompt and resolution.
     """
 
     @classmethod
     def define_schema(cls):
-        return comfy_io.Schema(
+        return IO.Schema(
             node_id="StabilityStableImageSD_3_5Node",
             display_name="Stability AI Stable Diffusion 3.5 Image",
             category="api node/image/Stability AI",
             description=cleandoc(cls.__doc__ or ""),
             inputs=[
-                comfy_io.String.Input(
+                IO.String.Input(
                     "prompt",
                     multiline=True,
                     default="",
                     tooltip="What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results.",
                 ),
-                comfy_io.Combo.Input(
+                IO.Combo.Input(
                     "model",
-                    options=[x.value for x in Stability_SD3_5_Model],
+                    options=Stability_SD3_5_Model,
                 ),
-                comfy_io.Combo.Input(
+                IO.Combo.Input(
                     "aspect_ratio",
-                    options=[x.value for x in StabilityAspectRatio],
-                    default=StabilityAspectRatio.ratio_1_1.value,
+                    options=StabilityAspectRatio,
+                    default=StabilityAspectRatio.ratio_1_1,
                     tooltip="Aspect ratio of generated image.",
                 ),
-                comfy_io.Combo.Input(
+                IO.Combo.Input(
                     "style_preset",
                     options=get_stability_style_presets(),
                     tooltip="Optional desired style of generated image.",
                 ),
-                comfy_io.Float.Input(
+                IO.Float.Input(
                     "cfg_scale",
                     default=4.0,
                     min=1.0,
@@ -231,28 +238,28 @@ class StabilityStableImageSD_3_5Node(comfy_io.ComfyNode):
                     step=0.1,
                     tooltip="How strictly the diffusion process adheres to the prompt text (higher values keep your image closer to your prompt)",
                 ),
-                comfy_io.Int.Input(
+                IO.Int.Input(
                     "seed",
                     default=0,
                     min=0,
                     max=4294967294,
                     step=1,
-                    display_mode=comfy_io.NumberDisplay.number,
+                    display_mode=IO.NumberDisplay.number,
                     control_after_generate=True,
                     tooltip="The random seed used for creating the noise.",
                 ),
-                comfy_io.Image.Input(
+                IO.Image.Input(
                     "image",
                     optional=True,
                 ),
-                comfy_io.String.Input(
+                IO.String.Input(
                     "negative_prompt",
                     default="",
                     tooltip="Keywords of what you do not wish to see in the output image. This is an advanced feature.",
                     force_input=True,
                     optional=True,
                 ),
-                comfy_io.Float.Input(
+                IO.Float.Input(
                     "image_denoise",
                     default=0.5,
                     min=0.0,
@@ -263,12 +270,12 @@ class StabilityStableImageSD_3_5Node(comfy_io.ComfyNode):
                 ),
             ],
             outputs=[
-                comfy_io.Image.Output(),
+                IO.Image.Output(),
             ],
             hidden=[
-                comfy_io.Hidden.auth_token_comfy_org,
-                comfy_io.Hidden.api_key_comfy_org,
-                comfy_io.Hidden.unique_id,
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
             ],
             is_api_node=True,
         )
@@ -285,7 +292,7 @@ class StabilityStableImageSD_3_5Node(comfy_io.ComfyNode):
         image: Optional[torch.Tensor] = None,
         negative_prompt: str = "",
         image_denoise: Optional[float] = 0.5,
-    ) -> comfy_io.NodeOutput:
+    ) -> IO.NodeOutput:
         validate_string(prompt, strip_whitespace=False)
         # prepare image binary if image present
         image_binary = None
@@ -341,30 +348,30 @@ class StabilityStableImageSD_3_5Node(comfy_io.ComfyNode):
         image_data = base64.b64decode(response_api.image)
         returned_image = bytesio_to_image_tensor(BytesIO(image_data))
 
-        return comfy_io.NodeOutput(returned_image)
+        return IO.NodeOutput(returned_image)
 
 
-class StabilityUpscaleConservativeNode(comfy_io.ComfyNode):
+class StabilityUpscaleConservativeNode(IO.ComfyNode):
     """
     Upscale image with minimal alterations to 4K resolution.
     """
 
     @classmethod
     def define_schema(cls):
-        return comfy_io.Schema(
+        return IO.Schema(
             node_id="StabilityUpscaleConservativeNode",
             display_name="Stability AI Upscale Conservative",
             category="api node/image/Stability AI",
             description=cleandoc(cls.__doc__ or ""),
             inputs=[
-                comfy_io.Image.Input("image"),
-                comfy_io.String.Input(
+                IO.Image.Input("image"),
+                IO.String.Input(
                     "prompt",
                     multiline=True,
                     default="",
                     tooltip="What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results.",
                 ),
-                comfy_io.Float.Input(
+                IO.Float.Input(
                     "creativity",
                     default=0.35,
                     min=0.2,
@@ -372,17 +379,17 @@ class StabilityUpscaleConservativeNode(comfy_io.ComfyNode):
                     step=0.01,
                     tooltip="Controls the likelihood of creating additional details not heavily conditioned by the init image.",
                 ),
-                comfy_io.Int.Input(
+                IO.Int.Input(
                     "seed",
                     default=0,
                     min=0,
                     max=4294967294,
                     step=1,
-                    display_mode=comfy_io.NumberDisplay.number,
+                    display_mode=IO.NumberDisplay.number,
                     control_after_generate=True,
                     tooltip="The random seed used for creating the noise.",
                 ),
-                comfy_io.String.Input(
+                IO.String.Input(
                     "negative_prompt",
                     default="",
                     tooltip="Keywords of what you do not wish to see in the output image. This is an advanced feature.",
@@ -391,12 +398,12 @@ class StabilityUpscaleConservativeNode(comfy_io.ComfyNode):
                 ),
             ],
             outputs=[
-                comfy_io.Image.Output(),
+                IO.Image.Output(),
             ],
             hidden=[
-                comfy_io.Hidden.auth_token_comfy_org,
-                comfy_io.Hidden.api_key_comfy_org,
-                comfy_io.Hidden.unique_id,
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
             ],
             is_api_node=True,
         )
@@ -409,7 +416,7 @@ class StabilityUpscaleConservativeNode(comfy_io.ComfyNode):
         creativity: float,
         seed: int,
         negative_prompt: str = "",
-    ) -> comfy_io.NodeOutput:
+    ) -> IO.NodeOutput:
         validate_string(prompt, strip_whitespace=False)
         image_binary = tensor_to_bytesio(image, total_pixels=1024*1024).read()
 
@@ -450,30 +457,30 @@ class StabilityUpscaleConservativeNode(comfy_io.ComfyNode):
         image_data = base64.b64decode(response_api.image)
         returned_image = bytesio_to_image_tensor(BytesIO(image_data))
 
-        return comfy_io.NodeOutput(returned_image)
+        return IO.NodeOutput(returned_image)
 
 
-class StabilityUpscaleCreativeNode(comfy_io.ComfyNode):
+class StabilityUpscaleCreativeNode(IO.ComfyNode):
     """
     Upscale image with minimal alterations to 4K resolution.
     """
 
     @classmethod
     def define_schema(cls):
-        return comfy_io.Schema(
+        return IO.Schema(
             node_id="StabilityUpscaleCreativeNode",
             display_name="Stability AI Upscale Creative",
             category="api node/image/Stability AI",
             description=cleandoc(cls.__doc__ or ""),
             inputs=[
-                comfy_io.Image.Input("image"),
-                comfy_io.String.Input(
+                IO.Image.Input("image"),
+                IO.String.Input(
                     "prompt",
                     multiline=True,
                     default="",
                     tooltip="What you wish to see in the output image. A strong, descriptive prompt that clearly defines elements, colors, and subjects will lead to better results.",
                 ),
-                comfy_io.Float.Input(
+                IO.Float.Input(
                     "creativity",
                     default=0.3,
                     min=0.1,
@@ -481,22 +488,22 @@ class StabilityUpscaleCreativeNode(comfy_io.ComfyNode):
                     step=0.01,
                     tooltip="Controls the likelihood of creating additional details not heavily conditioned by the init image.",
                 ),
-                comfy_io.Combo.Input(
+                IO.Combo.Input(
                     "style_preset",
                     options=get_stability_style_presets(),
                     tooltip="Optional desired style of generated image.",
                 ),
-                comfy_io.Int.Input(
+                IO.Int.Input(
                     "seed",
                     default=0,
                     min=0,
                     max=4294967294,
                     step=1,
-                    display_mode=comfy_io.NumberDisplay.number,
+                    display_mode=IO.NumberDisplay.number,
                     control_after_generate=True,
                     tooltip="The random seed used for creating the noise.",
                 ),
-                comfy_io.String.Input(
+                IO.String.Input(
                     "negative_prompt",
                     default="",
                     tooltip="Keywords of what you do not wish to see in the output image. This is an advanced feature.",
@@ -505,12 +512,12 @@ class StabilityUpscaleCreativeNode(comfy_io.ComfyNode):
                 ),
             ],
             outputs=[
-                comfy_io.Image.Output(),
+                IO.Image.Output(),
             ],
             hidden=[
-                comfy_io.Hidden.auth_token_comfy_org,
-                comfy_io.Hidden.api_key_comfy_org,
-                comfy_io.Hidden.unique_id,
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
             ],
             is_api_node=True,
         )
@@ -524,7 +531,7 @@ class StabilityUpscaleCreativeNode(comfy_io.ComfyNode):
         style_preset: str,
         seed: int,
         negative_prompt: str = "",
-    ) -> comfy_io.NodeOutput:
+    ) -> IO.NodeOutput:
         validate_string(prompt, strip_whitespace=False)
         image_binary = tensor_to_bytesio(image, total_pixels=1024*1024).read()
 
@@ -584,37 +591,37 @@ class StabilityUpscaleCreativeNode(comfy_io.ComfyNode):
         image_data = base64.b64decode(response_poll.result)
         returned_image = bytesio_to_image_tensor(BytesIO(image_data))
 
-        return comfy_io.NodeOutput(returned_image)
+        return IO.NodeOutput(returned_image)
 
 
-class StabilityUpscaleFastNode(comfy_io.ComfyNode):
+class StabilityUpscaleFastNode(IO.ComfyNode):
     """
     Quickly upscales an image via Stability API call to 4x its original size; intended for upscaling low-quality/compressed images.
     """
 
     @classmethod
     def define_schema(cls):
-        return comfy_io.Schema(
+        return IO.Schema(
             node_id="StabilityUpscaleFastNode",
             display_name="Stability AI Upscale Fast",
             category="api node/image/Stability AI",
             description=cleandoc(cls.__doc__ or ""),
             inputs=[
-                comfy_io.Image.Input("image"),
+                IO.Image.Input("image"),
             ],
             outputs=[
-                comfy_io.Image.Output(),
+                IO.Image.Output(),
             ],
             hidden=[
-                comfy_io.Hidden.auth_token_comfy_org,
-                comfy_io.Hidden.api_key_comfy_org,
-                comfy_io.Hidden.unique_id,
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
             ],
             is_api_node=True,
         )
 
     @classmethod
-    async def execute(cls, image: torch.Tensor) -> comfy_io.NodeOutput:
+    async def execute(cls, image: torch.Tensor) -> IO.NodeOutput:
         image_binary = tensor_to_bytesio(image, total_pixels=4096*4096).read()
 
         files = {
@@ -646,18 +653,321 @@ class StabilityUpscaleFastNode(comfy_io.ComfyNode):
         image_data = base64.b64decode(response_api.image)
         returned_image = bytesio_to_image_tensor(BytesIO(image_data))
 
-        return comfy_io.NodeOutput(returned_image)
+        return IO.NodeOutput(returned_image)
+
+
+class StabilityTextToAudio(IO.ComfyNode):
+    """Generates high-quality music and sound effects from text descriptions."""
+
+    @classmethod
+    def define_schema(cls):
+        return IO.Schema(
+            node_id="StabilityTextToAudio",
+            display_name="Stability AI Text To Audio",
+            category="api node/audio/Stability AI",
+            description=cleandoc(cls.__doc__ or ""),
+            inputs=[
+                IO.Combo.Input(
+                    "model",
+                    options=["stable-audio-2.5"],
+                ),
+                IO.String.Input("prompt", multiline=True, default=""),
+                IO.Int.Input(
+                    "duration",
+                    default=190,
+                    min=1,
+                    max=190,
+                    step=1,
+                    tooltip="Controls the duration in seconds of the generated audio.",
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "seed",
+                    default=0,
+                    min=0,
+                    max=4294967294,
+                    step=1,
+                    display_mode=IO.NumberDisplay.number,
+                    control_after_generate=True,
+                    tooltip="The random seed used for generation.",
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "steps",
+                    default=8,
+                    min=4,
+                    max=8,
+                    step=1,
+                    tooltip="Controls the number of sampling steps.",
+                    optional=True,
+                ),
+            ],
+            outputs=[
+                IO.Audio.Output(),
+            ],
+            hidden=[
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
+            ],
+            is_api_node=True,
+        )
+
+    @classmethod
+    async def execute(cls, model: str, prompt: str, duration: int, seed: int, steps: int) -> IO.NodeOutput:
+        validate_string(prompt, max_length=10000)
+        payload = StabilityTextToAudioRequest(prompt=prompt, model=model, duration=duration, seed=seed, steps=steps)
+        operation = SynchronousOperation(
+            endpoint=ApiEndpoint(
+                path="/proxy/stability/v2beta/audio/stable-audio-2/text-to-audio",
+                method=HttpMethod.POST,
+                request_model=StabilityTextToAudioRequest,
+                response_model=StabilityAudioResponse,
+            ),
+            request=payload,
+            content_type="multipart/form-data",
+            auth_kwargs= {
+                "auth_token": cls.hidden.auth_token_comfy_org,
+                "comfy_api_key": cls.hidden.api_key_comfy_org,
+            },
+        )
+        response_api = await operation.execute()
+        if not response_api.audio:
+            raise ValueError("No audio file was received in response.")
+        return IO.NodeOutput(audio_bytes_to_audio_input(base64.b64decode(response_api.audio)))
+
+
+class StabilityAudioToAudio(IO.ComfyNode):
+    """Transforms existing audio samples into new high-quality compositions using text instructions."""
+
+    @classmethod
+    def define_schema(cls):
+        return IO.Schema(
+            node_id="StabilityAudioToAudio",
+            display_name="Stability AI Audio To Audio",
+            category="api node/audio/Stability AI",
+            description=cleandoc(cls.__doc__ or ""),
+            inputs=[
+                IO.Combo.Input(
+                    "model",
+                    options=["stable-audio-2.5"],
+                ),
+                IO.String.Input("prompt", multiline=True, default=""),
+                IO.Audio.Input("audio", tooltip="Audio must be between 6 and 190 seconds long."),
+                IO.Int.Input(
+                    "duration",
+                    default=190,
+                    min=1,
+                    max=190,
+                    step=1,
+                    tooltip="Controls the duration in seconds of the generated audio.",
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "seed",
+                    default=0,
+                    min=0,
+                    max=4294967294,
+                    step=1,
+                    display_mode=IO.NumberDisplay.number,
+                    control_after_generate=True,
+                    tooltip="The random seed used for generation.",
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "steps",
+                    default=8,
+                    min=4,
+                    max=8,
+                    step=1,
+                    tooltip="Controls the number of sampling steps.",
+                    optional=True,
+                ),
+                IO.Float.Input(
+                    "strength",
+                    default=1,
+                    min=0.01,
+                    max=1.0,
+                    step=0.01,
+                    display_mode=IO.NumberDisplay.slider,
+                    tooltip="Parameter controls how much influence the audio parameter has on the generated audio.",
+                    optional=True,
+                ),
+            ],
+            outputs=[
+                IO.Audio.Output(),
+            ],
+            hidden=[
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
+            ],
+            is_api_node=True,
+        )
+
+    @classmethod
+    async def execute(
+        cls, model: str, prompt: str, audio: Input.Audio, duration: int, seed: int, steps: int, strength: float
+    ) -> IO.NodeOutput:
+        validate_string(prompt, max_length=10000)
+        validate_audio_duration(audio, 6, 190)
+        payload = StabilityAudioToAudioRequest(
+            prompt=prompt, model=model, duration=duration, seed=seed, steps=steps, strength=strength
+        )
+        operation = SynchronousOperation(
+            endpoint=ApiEndpoint(
+                path="/proxy/stability/v2beta/audio/stable-audio-2/audio-to-audio",
+                method=HttpMethod.POST,
+                request_model=StabilityAudioToAudioRequest,
+                response_model=StabilityAudioResponse,
+            ),
+            request=payload,
+            content_type="multipart/form-data",
+            files={"audio": audio_input_to_mp3(audio)},
+            auth_kwargs= {
+                "auth_token": cls.hidden.auth_token_comfy_org,
+                "comfy_api_key": cls.hidden.api_key_comfy_org,
+            },
+        )
+        response_api = await operation.execute()
+        if not response_api.audio:
+            raise ValueError("No audio file was received in response.")
+        return IO.NodeOutput(audio_bytes_to_audio_input(base64.b64decode(response_api.audio)))
+
+
+class StabilityAudioInpaint(IO.ComfyNode):
+    """Transforms part of existing audio sample using text instructions."""
+
+    @classmethod
+    def define_schema(cls):
+        return IO.Schema(
+            node_id="StabilityAudioInpaint",
+            display_name="Stability AI Audio Inpaint",
+            category="api node/audio/Stability AI",
+            description=cleandoc(cls.__doc__ or ""),
+            inputs=[
+                IO.Combo.Input(
+                    "model",
+                    options=["stable-audio-2.5"],
+                ),
+                IO.String.Input("prompt", multiline=True, default=""),
+                IO.Audio.Input("audio", tooltip="Audio must be between 6 and 190 seconds long."),
+                IO.Int.Input(
+                    "duration",
+                    default=190,
+                    min=1,
+                    max=190,
+                    step=1,
+                    tooltip="Controls the duration in seconds of the generated audio.",
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "seed",
+                    default=0,
+                    min=0,
+                    max=4294967294,
+                    step=1,
+                    display_mode=IO.NumberDisplay.number,
+                    control_after_generate=True,
+                    tooltip="The random seed used for generation.",
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "steps",
+                    default=8,
+                    min=4,
+                    max=8,
+                    step=1,
+                    tooltip="Controls the number of sampling steps.",
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "mask_start",
+                    default=30,
+                    min=0,
+                    max=190,
+                    step=1,
+                    optional=True,
+                ),
+                IO.Int.Input(
+                    "mask_end",
+                    default=190,
+                    min=0,
+                    max=190,
+                    step=1,
+                    optional=True,
+                ),
+            ],
+            outputs=[
+                IO.Audio.Output(),
+            ],
+            hidden=[
+                IO.Hidden.auth_token_comfy_org,
+                IO.Hidden.api_key_comfy_org,
+                IO.Hidden.unique_id,
+            ],
+            is_api_node=True,
+        )
+
+    @classmethod
+    async def execute(
+        cls,
+        model: str,
+        prompt: str,
+        audio: Input.Audio,
+        duration: int,
+        seed: int,
+        steps: int,
+        mask_start: int,
+        mask_end: int,
+    ) -> IO.NodeOutput:
+        validate_string(prompt, max_length=10000)
+        if mask_end <= mask_start:
+            raise ValueError(f"Value of mask_end({mask_end}) should be greater then mask_start({mask_start})")
+        validate_audio_duration(audio, 6, 190)
+
+        payload = StabilityAudioInpaintRequest(
+            prompt=prompt,
+            model=model,
+            duration=duration,
+            seed=seed,
+            steps=steps,
+            mask_start=mask_start,
+            mask_end=mask_end,
+        )
+        operation = SynchronousOperation(
+            endpoint=ApiEndpoint(
+                path="/proxy/stability/v2beta/audio/stable-audio-2/inpaint",
+                method=HttpMethod.POST,
+                request_model=StabilityAudioInpaintRequest,
+                response_model=StabilityAudioResponse,
+            ),
+            request=payload,
+            content_type="multipart/form-data",
+            files={"audio": audio_input_to_mp3(audio)},
+            auth_kwargs={
+                "auth_token": cls.hidden.auth_token_comfy_org,
+                "comfy_api_key": cls.hidden.api_key_comfy_org,
+            },
+        )
+        response_api = await operation.execute()
+        if not response_api.audio:
+            raise ValueError("No audio file was received in response.")
+        return IO.NodeOutput(audio_bytes_to_audio_input(base64.b64decode(response_api.audio)))
 
 
 class StabilityExtension(ComfyExtension):
     @override
-    async def get_node_list(self) -> list[type[comfy_io.ComfyNode]]:
+    async def get_node_list(self) -> list[type[IO.ComfyNode]]:
         return [
             StabilityStableImageUltraNode,
             StabilityStableImageSD_3_5Node,
             StabilityUpscaleConservativeNode,
             StabilityUpscaleCreativeNode,
             StabilityUpscaleFastNode,
+            StabilityTextToAudio,
+            StabilityAudioToAudio,
+            StabilityAudioInpaint,
         ]
 
 

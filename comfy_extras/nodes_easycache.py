@@ -162,7 +162,12 @@ def easycache_sample_wrapper(executor, *args, **kwargs):
             logging.info(f"{easycache.name} [verbose] - output_change_rates {len(output_change_rates)}: {output_change_rates}")
             logging.info(f"{easycache.name} [verbose] - approx_output_change_rates {len(approx_output_change_rates)}: {approx_output_change_rates}")
         total_steps = len(args[3])-1
-        logging.info(f"{easycache.name} - skipped {easycache.total_steps_skipped}/{total_steps} steps ({total_steps/(total_steps-easycache.total_steps_skipped):.2f}x speedup).")
+        # catch division by zero for log statement; sucks to crash after all sampling is done
+        try:
+            speedup = total_steps/(total_steps-easycache.total_steps_skipped)
+        except ZeroDivisionError:
+            speedup = 1.0
+        logging.info(f"{easycache.name} - skipped {easycache.total_steps_skipped}/{total_steps} steps ({speedup:.2f}x speedup).")
         easycache.reset()
         guider.model_options = orig_model_options
 
@@ -239,6 +244,8 @@ class EasyCacheHolder:
             self.total_steps_skipped += 1
         batch_offset = x.shape[0] // len(uuids)
         for i, uuid in enumerate(uuids):
+            # slice out only what is relevant to this cond
+            batch_slice = [slice(i*batch_offset,(i+1)*batch_offset)]
             # if cached dims don't match x dims, cut off excess and hope for the best (cosmos world2video)
             if x.shape[1:] != self.uuid_cache_diffs[uuid].shape[1:]:
                 if not self.allow_mismatch:
@@ -256,9 +263,8 @@ class EasyCacheHolder:
                             slicing.append(slice(None, dim_u))
                     else:
                         slicing.append(slice(None))
-                slicing = [slice(i*batch_offset,(i+1)*batch_offset)] + slicing
-                x = x[slicing]
-            x += self.uuid_cache_diffs[uuid].to(x.device)
+                batch_slice = batch_slice + slicing
+            x[batch_slice] += self.uuid_cache_diffs[uuid].to(x.device)
         return x
 
     def update_cache_diff(self, output: torch.Tensor, x: torch.Tensor, uuids: list[UUID]):

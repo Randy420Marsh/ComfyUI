@@ -10,7 +10,11 @@ jobs:
   test:
     strategy:
       matrix:
+<<<<<<< HEAD
         os: [ubuntu-latest, windows-latest]
+=======
+        os: [ubuntu-latest, windows-2022, macos-latest]
+>>>>>>> 9d529e53084bdec28f684f3886a26c93598e7338
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     steps:
