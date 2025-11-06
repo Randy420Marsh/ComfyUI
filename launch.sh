@@ -93,11 +93,14 @@ echo "Launching..."
 
 python3 --version
 
+#ntfs filesystem mmap workaround fix
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+
 echo "To disable comfy registry update set network_mode = private in ComfyUI/user/default/ComfyUI-Manager/config.ini"
 
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention
+python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap
 
 #python3 -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention

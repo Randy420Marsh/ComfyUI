@@ -150,13 +150,9 @@ pip install "torch==2.1.2+cu121" "torchvision==0.16.2+cu121" "torchaudio==2.1.2+
 
 pip install "xformers" # Removed stray quote
 
-pip install "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av pynvml
-
 pip install -r requirements.txt
 
-pip uninstall onnxruntime-gpu onnxruntime
-
-pip install onnxruntime-gpu inference-gpu opencv-python-headless
+pip install "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av opencv-contrib-python inference-gpu pydantic==2.9.2 onnxruntime-gpu rich typer
 
 #pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
