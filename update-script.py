@@ -67,7 +67,6 @@ REQUIREMENTS_FILES: List[Path] = [
     CUSTOM_NODES_DIR / "ComfyUI_FizzNodes/requirements.txt",
     CUSTOM_NODES_DIR / "ComfyUI-VideoHelperSuite/requirements.txt",
     CUSTOM_NODES_DIR / "human-parser-comfyui-node-in-pure-python/requirements.txt",
-    CUSTOM_NODES_DIR / "ComfyUI-Allor.git/requirements.txt", # Corrected from .git to just the dir name if required
     CUSTOM_NODES_DIR / "ComfyUI-Allor/requirements.txt", # assuming the folder is 'ComfyUI-Allor'
     CUSTOM_NODES_DIR / "ComfyUI-WD14-Tagger/requirements.txt",
     CUSTOM_NODES_DIR / "ComfyUI_essentials/requirements.txt",
