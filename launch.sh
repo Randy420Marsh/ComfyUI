@@ -6,7 +6,9 @@ MAX_THREADS=$(nproc)
 # Set the environment variables
 
 #Disable mmap because it is not supported on ntfs partitions, enable or uncomment if using ext filesystem for better performance
-export COMFYUI_DISABLE_MMAP=1
+#this is defined in ./comfy/utils.py at line 54.
+
+export COMFYUI_DISABLE_MMAP=0
 
 export omp_set_max_active_levels=$MAX_THREADS
 export MKL_NUM_THREADS=$MAX_THREADS
@@ -24,7 +26,7 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
 
 #export model_args.use_multiprocessing=False
 
-export LD_LIBRARY_PATH=/usr/local/cuda-12.1/lib64
+export LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64
 
 #Uncomment as needed...
 
@@ -57,23 +59,23 @@ COMFYUI_PATH=$PWD
 
 export COMFYUI_PATH=$PWD
 
-SD_ROOT_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
+#SD_ROOT_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
 
-export SD_ROOT_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
+#export SD_ROOT_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
 
-COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
+#COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
 
-export COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
+#export COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
 
-cd $PWD
 
-echo "Current active SD root path:"
 
-echo $CUSTOM_ROOT_DRIVE
+#echo "Current active SD root path:"
 
-echo "SD models root path:"
+#echo $CUSTOM_ROOT_DRIVE
 
-echo $SD_ROOT_PATH
+#echo "SD models root path:"
+
+#echo $SD_ROOT_PATH
 
 export SAFETENSORS_FAST_GPU=1
 
@@ -85,22 +87,19 @@ echo "venv activated"
 
 export SAFETENSORS_FAST_GPU=1
 
-python="python3.10"
+python="python3.12.3"
 
-python3="python3.10"
+python3="python3.12.3"
 
 echo "Launching..."
 
 python3 --version
-
-#ntfs filesystem mmap workaround fix
-export PYTORCH_ENABLE_MPS_FALLBACK=1
 
 echo "To disable comfy registry update set network_mode = private in ComfyUI/user/default/ComfyUI-Manager/config.ini"
 
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap
+python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap 
 
 #python3 -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention
