@@ -7,10 +7,10 @@ COMFY_UI_DIR="$(pwd)"
 echo "COMFY_UI_DIR = $COMFY_UI_DIR"
 
 if [ -d "./venv" ]; then
-    source ./venv/bin/activate
+    source ./.venv/bin/activate
 else
-    python3.10 -m venv venv
-    source ./venv/bin/activate
+    python3.12 -m venv venv
+    source ./.venv/bin/activate
 fi
 
 python --version
@@ -19,7 +19,7 @@ read -p "Press Enter to continue..."
 
 python -m pip install --upgrade pip
 
-#git pull
+git pull
 
 cd custom_nodes
 
@@ -108,11 +108,6 @@ echo "Git clone finished 1/2..."
 cd "${COMFY_UI_DIR}"
 
 
-pip uninstall onnxruntime-gpu onnxruntime -y
-
-pip uninstall -y torch torchvision torchaudio xformers
-
-
 pip install -r "${CUSTOM_NODES_DIR}/comfyui_controlnet_aux/requirements.txt"
 pip install -r "${CUSTOM_NODES_DIR}/comfyui-dynamicprompts/requirements.txt"
 pip install -r "${CUSTOM_NODES_DIR}/efficiency-nodes-comfyui/requirements.txt"
@@ -130,15 +125,37 @@ pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-Yolo-World-EfficientSAM/requirements
 pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-CLIPSeg/requirements.txt"
 pip install -r "${CUSTOM_NODES_DIR}/ComfyUI-KJNodes/requirements.txt"
 
+
 cd ${CUSTOM_NODES_DIR}/ComfyUI-Impact-Subpack
 python -s install.py
 
-cd "${COMFY_UI_DIR}"
-
 pip install -r requirements.txt
 
-pip install --upgrade "inference[sam]" "inference[grounding-dino]" "inference[transformers]" "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "thinc" "numpy==1.26.4"  "daal" "daal4py" "ultralytics" "setuptools" "aiortc~=1.9.0" "av==12.3.0"  "albumentations==1.4.4" "pydantic>=2.9.2" "sam>=2" "torchsde" "aiohttp<=3.10.11,>=3.9.0" "spandrel" "kornia" "pynvml" "onnxruntime==1.19.2" "onnxruntime-gpu==1.19.2" "opencv-python<=4.10.0.84,>=4.8.1.78" "peft>=0.15.0" "bitsandbytes==0.47.0" "pycuda" "spacy"
+pip uninstall onnxruntime-gpu onnxruntime -y
 
-pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" "xformers" --index-url https://download.pytorch.org/whl/cu128
+pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" --index-url https://download.pytorch.org/whl/cu128
+
+pip uninstall -y torch torchvision torchaudio xformers
+
+pip install --upgrade 'inference[sam]' 'inference[grounding-dino]' 'inference[transformers]' "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools" "aiortc" "av"  "albumentations==1.4.4" "pydantic>=2.9.2" "sam>=2" xformers torchsde aiohttp spacy spandrel kornia av pynvml
+
+#pip install "xformers" # Removed stray quote
+
+#pip install 'inference[sam]' 'inference[grounding-dino]' 'inference[transformers]' "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av pynvml torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+pip uninstall -y torch torchvision torchaudio xformers
+
+pip install --upgrade 'inference[sam]' 'inference[grounding-dino]' 'inference[transformers]' "mediapipe" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools" "aiortc" "av"  "albumentations==1.4.4" "pydantic>=2.9.2" "sam>=2" torchsde aiohttp spacy spandrel kornia av pynvml
+
+pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" --index-url https://download.pytorch.org/whl/cu128
+
+#pip install "xformers" # Removed stray quote
+
+#pip install 'inference[sam]' 'inference[grounding-dino]' 'inference[transformers]' "numpy<2.0.0,>=1.0.0" "mediapipe==0.10.21" "Pillow<10,>=9.0.0" "scikit-learn-intelex" "numpy==1.26.4" "thinc" "daal" "daal4py" "ultralytics" "setuptools==72.1.0" torchsde aiohttp spacy spandrel kornia av pynvml torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+
+
+pip install onnxruntime-gpu inference-gpu opencv-python-headless "numpy<2,>=1"
+
+#pip install onnxruntime-gpu --index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
 
 echo "Update/install finished 2/2..."

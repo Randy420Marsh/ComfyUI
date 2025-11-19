@@ -11,7 +11,7 @@ uv python pin 3.12
 if [ -d "./.venv" ]; then
     source ./.venv/bin/activate
 else
-    uv venv --python3.12
+    uv venv --python 3.12
     source ./.venv/bin/activate
 fi
 

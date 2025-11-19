@@ -26,7 +26,7 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
 
 #export model_args.use_multiprocessing=False
 
-export LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64
+export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64
 
 #Uncomment as needed...
 
@@ -100,6 +100,6 @@ echo "To disable comfy registry update set network_mode = private in ComfyUI/use
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap
+python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap --listen 127.0.0.1:8188
 
 #python3 -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention
