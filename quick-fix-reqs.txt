@@ -1,1 +1,0 @@
-uv pip install protobuf grpcio-status google-genai httpx pydantic inference inference-gpu typing-extensions mediapipe
