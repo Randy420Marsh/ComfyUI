@@ -1,0 +1,105 @@
+# Rename this to extra_model_paths.yaml and ComfyUI will load it
+
+# =============================================================================
+# A1111 WebUI Configuration
+# =============================================================================
+a111:
+    base_path: /media/john/20TB/AI/stable_diffusion_models_and_vae
+    
+    # Single path folders
+    checkpoints: models/Stable-diffusion
+    configs: models/Stable-diffusion
+    vae: models/VAE
+    embeddings: models/embeddings
+    hypernetworks: models/hypernetworks
+    controlnet: models/ControlNet
+    sams: models/sams
+    schp: models/schp
+    
+    # Multiple path folders (using pipe | for multi-line)
+    loras: |
+         models/Lora
+         models/LyCORIS
+    
+    upscale_models: |
+                  models/ESRGAN
+                  models/RealESRGAN
+                  models/SwinIR
+
+# =============================================================================
+# ComfyUI Configuration
+# =============================================================================
+comfyui:
+    base_path: /media/john/20TB/AI/stable_diffusion_models_and_vae
+    
+    # Single path folders
+    animatediff_models: models/animatediff_models
+    
+    # Ultralytics models (separated into bbox and segm)
+    ultralytics_bbox: models/ultralytics/bbox
+    ultralytics_segm: models/ultralytics/segm
+    
+    # Multiple path folders (using pipe | for multi-line)
+    diffusion_models: |
+                 models/diffusion_models
+                 models/unet
+    
+    text_encoders: models/text_encoders
+
+# =============================================================================
+# Reference: Full ComfyUI Configuration Example (commented out)
+# =============================================================================
+# comfyui:
+#     base_path: /path/to/comfyui/
+#     # You can use is_default to mark that these folders should be listed first, and used as the default dirs for eg downloads
+#     # is_default: true
+#     checkpoints: models/checkpoints/
+#     text_encoders: |
+#          models/text_encoders/
+#          models/clip/  # legacy location still supported
+#     clip_vision: models/clip_vision/
+#     configs: models/configs/
+#     controlnet: models/controlnet/
+#     diffusion_models: |
+#                  models/diffusion_models
+#                  models/unet
+#     embeddings: models/embeddings/
+#     loras: models/loras/
+#     upscale_models: models/upscale_models/
+#     vae: models/vae/
+#     audio_encoders: models/audio_encoders/
+#     model_patches: models/model_patches/
+
+# =============================================================================
+# Reference: A1111 Configuration Example (commented out)
+# =============================================================================
+# a111:
+#     base_path: /path/to/stable-diffusion-webui/
+#     checkpoints: models/Stable-diffusion
+#     configs: models/Stable-diffusion
+#     vae: models/VAE
+#     loras: |
+#          models/Lora
+#          models/LyCORIS
+#     upscale_models: |
+#                   models/ESRGAN
+#                   models/RealESRGAN
+#                   models/SwinIR
+#     embeddings: embeddings
+#     hypernetworks: models/hypernetworks
+#     controlnet: models/ControlNet
+
+# =============================================================================
+# Reference: Other UI Configuration Example (commented out)
+# =============================================================================
+# other_ui:
+#     base_path: /path/to/ui
+#     checkpoints: models/checkpoints
+#     gligen: models/gligen
+#     custom_nodes: path/custom_nodes
+
+# =============================================================================
+# For a full list of supported keys, see folder_paths.py
+# Examples: style_models, vae_approx, hypernetworks, photomaker,
+#           model_patches, audio_encoders, classifiers, etc.
+# =============================================================================
