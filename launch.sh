@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Determine the maximum number of available CPU threads
-MAX_THREADS=$(nproc)
+#MAX_THREADS=$(nproc)
 
 # Set the environment variables
 
@@ -10,8 +10,8 @@ MAX_THREADS=$(nproc)
 
 export COMFYUI_DISABLE_MMAP=0
 
-export omp_set_max_active_levels=$MAX_THREADS
-export MKL_NUM_THREADS=$MAX_THREADS
+#export omp_set_max_active_levels=$MAX_THREADS
+#export MKL_NUM_THREADS=$MAX_THREADS
 
 export DREAMBOOTH_SKIP_INSTALL=True
 
@@ -20,9 +20,9 @@ export TRANSFORMRRS_OFFLINE=1
 
 echo "Using $MAX_THREADS threads for OMP and MKL"
 
-export LD_PRELOAD=/usr/local/lib/libjemalloc.so:$LD_PRELOAD
-export MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms: 60000,muzzy_decay_ms:60000"
-export LD_PRELOAD=/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
+#export LD_PRELOAD=/usr/local/lib/libjemalloc.so:$LD_PRELOAD
+#export MALLOC_CONF="oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms: 60000,muzzy_decay_ms:60000"
+#export LD_PRELOAD=/lib/x86_64-linux-gnu/libiomp5.so:$LD_PRELOAD
 
 #export model_args.use_multiprocessing=False
 
@@ -79,7 +79,7 @@ export COMFYUI_PATH=$PWD
 
 export SAFETENSORS_FAST_GPU=1
 
-export PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512
+#export PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512
 
 source ./.venv/bin/activate
 
@@ -100,6 +100,6 @@ echo "To disable comfy registry update set network_mode = private in ComfyUI/use
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-python3 -s main.py --dont-upcast-attention --port 4434 --lowvram --use-pytorch-cross-attention --disable-mmap --listen 127.0.0.1
+python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --disable-mmap --listen 127.0.0.1
 
 #python3 -s main.py --dont-upcast-attention --port 4434 --use-pytorch-cross-attention
