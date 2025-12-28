@@ -6,12 +6,12 @@ echo "CUSTOM_NODES_DIR = $CUSTOM_NODES_DIR"
 COMFY_UI_DIR="$(pwd)"
 echo "COMFY_UI_DIR = $COMFY_UI_DIR"
 
-uv python pin 3.12
+uv python pin 3.11
 
 if [ -d "./.venv" ]; then
     source ./.venv/bin/activate
 else
-    uv venv --python 3.12
+    uv venv --python 3.11
     source ./.venv/bin/activate
 fi
 
@@ -152,7 +152,7 @@ uv pip install --upgrade "inference[sam]" "inference[grounding-dino]" "inference
 
 #uv pip install --upgrade "torch==2.7.1+cu128" "torchaudio==2.7.1+cu128" "torchvision==0.22.1+cu128" "xformers" --index-url https://download.pytorch.org/whl/cu128
 
-uv pip install --upgrade "torch" "torchaudio" "torchvision" "xformers" --index-url https://download.pytorch.org/whl/cu128
+uv pip install --upgrade "torch" "torchaudio" "torchvision" --index-url https://download.pytorch.org/whl/cu128
 
 uv pip install --upgrade "numpy==1.26.4" "Pillow<10,>=9.0.0" "networkx<=3.4" "inference-gpu" "inference" "protobuf" "mediapipe" "pydantic" "pyparsing" "shapely" "dghs-imgutils" "scikit-learn"  "diffusers" "dashscope" "llama-cpp-python" "piexif" "chardet" "dghs-imgutils[gpu]" "pycryptodome" "aiortc" "aiohttp" "mediapipe" "pyrfc6266" "opencv-contrib-python" "albucore" "rembg" "albumentations" "shapely" "supervision" "inference-gpu[yolo-world]<=0.47.0"
 
