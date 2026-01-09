@@ -79,7 +79,7 @@ export COMFYUI_PATH=$PWD
 
 export SAFETENSORS_FAST_GPU=1
 
-#export PYTORCH_CUDA_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512
+export PYTORCH_ALLOC_CONF=garbage_collection_threshold:0.9,max_split_size_mb:512
 
 source ./.venv/bin/activate
 
