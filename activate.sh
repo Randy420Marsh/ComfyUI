@@ -3,6 +3,8 @@
 use_cuda13
 
 # 1. Point the build to your 13.1 installation
+export UV_LINK_MODE=copy
+export BNB_CUDA_VERSION=128
 export CUDA_HOME=/usr/local/cuda-13.1
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
