@@ -8,15 +8,15 @@
 #Disable mmap because it is not supported on ntfs partitions, enable or uncomment if using ext filesystem for better performance
 #this is defined in ./comfy/utils.py at line 54.
 
-export COMFYUI_DISABLE_MMAP=0
+#export COMFYUI_DISABLE_MMAP=0
 
 #export omp_set_max_active_levels=$MAX_THREADS
 #export MKL_NUM_THREADS=$MAX_THREADS
 
-export DREAMBOOTH_SKIP_INSTALL=True
+#export DREAMBOOTH_SKIP_INSTALL=True
 
-export HF_DATASETS_OFFLINE=1
-export TRANSFORMRRS_OFFLINE=1
+#export HF_DATASETS_OFFLINE=1
+#export TRANSFORMRRS_OFFLINE=1
 
 echo "Using $MAX_THREADS threads for OMP and MKL"
 
@@ -87,9 +87,9 @@ echo "venv activated"
 
 export SAFETENSORS_FAST_GPU=1
 
-python="python3.12"
+python="python3.11"
 
-python3="python3.12"
+python3="python3.11"
 
 echo "Launching..."
 
