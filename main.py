@@ -3,6 +3,7 @@ comfy.options.enable_args_parsing()
 
 import os
 import importlib.util
+import shutil
 import importlib.metadata
 import folder_paths
 import time
@@ -11,6 +12,7 @@ from app.logger import setup_logger
 import itertools
 import utils.extra_config
 from utils.mime_types import init_mime_types
+import faulthandler
 import logging
 import sys
 from comfy_execution.progress import get_progress_state
@@ -24,6 +26,8 @@ if __name__ == "__main__":
     os.environ['DO_NOT_TRACK'] = '1'
 
 setup_logger(log_level=args.verbose, use_stdout=args.log_stdout)
+
+faulthandler.enable(file=sys.stderr, all_threads=False)
 
 import comfy_aimdo.control
 
@@ -64,8 +68,15 @@ if __name__ == "__main__":
 
 
 def handle_comfyui_manager_unavailable():
-    if not args.windows_standalone_build:
-        logging.warning(f"\n\nYou appear to be running comfyui-manager from source, this is not recommended. Please install comfyui-manager using the following command:\ncommand:\n\t{sys.executable} -m pip install --pre comfyui_manager\n")
+    manager_req_path = os.path.join(os.path.dirname(os.path.abspath(folder_paths.__file__)), "manager_requirements.txt")
+    uv_available = shutil.which("uv") is not None
+
+    pip_cmd = f"{sys.executable} -m pip install -r {manager_req_path}"
+    msg = f"\n\nTo use the `--enable-manager` feature, the `comfyui-manager` package must be installed first.\ncommand:\n\t{pip_cmd}"
+    if uv_available:
+        msg += f"\nor using uv:\n\tuv pip install -r {manager_req_path}"
+    msg += "\n"
+    logging.warning(msg)
     args.enable_manager = False
 
 
@@ -173,7 +184,6 @@ execute_prestartup_script()
 
 # Main code
 import asyncio
-import shutil
 import threading
 import gc
 
