@@ -280,9 +280,6 @@ class CLIP:
         n.apply_hooks_to_conds = self.apply_hooks_to_conds
         return n
 
-    def get_ram_usage(self):
-        return self.patcher.get_ram_usage()
-
     def add_patches(self, patches, strength_patch=1.0, strength_model=1.0):
         return self.patcher.add_patches(patches, strength_patch, strength_model)
 
@@ -839,9 +836,6 @@ class VAE:
             return self.size
         self.size = comfy.model_management.module_size(self.first_stage_model)
         return self.size
-
-    def get_ram_usage(self):
-        return self.model_size()
 
     def throw_exception_if_invalid(self):
         if self.first_stage_model is None:
@@ -1742,15 +1736,16 @@ def load_diffusion_model_state_dict(sd, model_options={}, metadata=None, disable
     """
     dtype = model_options.get("dtype", None)
 
+    custom_operations = model_options.get("custom_operations", None)
+    if custom_operations is None:
+        sd, metadata = comfy.utils.convert_old_quants(sd, "", metadata=metadata)
+
     #Allow loading unets from checkpoint files
     diffusion_model_prefix = model_detection.unet_prefix_from_state_dict(sd)
     temp_sd = comfy.utils.state_dict_prefix_replace(sd, {diffusion_model_prefix: ""}, filter_keys=True)
     if len(temp_sd) > 0:
         sd = temp_sd
 
-    custom_operations = model_options.get("custom_operations", None)
-    if custom_operations is None:
-        sd, metadata = comfy.utils.convert_old_quants(sd, "", metadata=metadata)
     parameters = comfy.utils.calculate_parameters(sd)
     weight_dtype = comfy.utils.weight_dtype(sd)
 
