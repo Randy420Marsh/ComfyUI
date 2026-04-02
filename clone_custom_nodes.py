@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """
-Clone all git repositories referenced in an HTML <a href="..."> list into a custom_nodes directory,
-using shallow clones: `git clone --depth 1`.
+Clone or UPDATE all git repositories from an HTML <a href="..."> list into custom_nodes.
+
+Behavior:
+- If folder doesn't exist → git clone --depth 1
+- If folder exists     → git pull (updates to latest code)
+- --install flag (OFF by default) runs pip install -r requirements.txt after update/clone
+- Safe for parallel jobs (--jobs 8 is fine)
 
 Example:
-  python clone_custom_nodes.py --html CustomNodeRepositories.html --target ./custom_nodes
-
-Notes:
-- Existing destination folders are skipped by default.
-- Use --force to delete an existing folder and re-clone.
+  python clone_custom_nodes.py --html CustomNodeRepositories.html --target ./custom_nodes --jobs 8
+  python clone_custom_nodes.py --html CustomNodeRepositories.html --target ./custom_nodes --jobs 1 --install
 """
 
 from __future__ import annotations
@@ -34,9 +36,6 @@ class Repo:
 
 
 class AnchorRepoParser(HTMLParser):
-    """
-    Extract <a href="...">TEXT</a> pairs.
-    """
     def __init__(self) -> None:
         super().__init__()
         self._in_a = False
@@ -77,23 +76,14 @@ class AnchorRepoParser(HTMLParser):
 
 
 def sanitize_dirname(name: str) -> str:
-    """
-    Make a conservative filesystem-friendly directory name.
-    """
     name = name.strip()
-    # Replace path separators with underscore
     name = name.replace("/", "_").replace("\\", "_")
-    # Remove characters that are commonly problematic on Windows/macOS/Linux
     name = re.sub(r'[:*?"<>|]', "_", name)
-    # Collapse whitespace
     name = re.sub(r"\s+", " ", name).strip()
     return name
 
 
 def derive_repo_name_from_url(url: str) -> str:
-    """
-    Derive a folder name from the URL path, e.g. .../owner/repo(.git) -> repo
-    """
     try:
         p = urlparse(url)
         last = (p.path or "").rstrip("/").split("/")[-1]
@@ -109,7 +99,6 @@ def load_repos_from_html(html_path: Path) -> List[Repo]:
     parser = AnchorRepoParser()
     parser.feed(html_text)
 
-    # Keep only plausible git/http(s) URLs (your file uses GitHub https links)
     repos = []
     seen = set()
     for r in parser.repos:
@@ -125,54 +114,96 @@ def load_repos_from_html(html_path: Path) -> List[Repo]:
 
 def ensure_git_available() -> None:
     try:
-        subprocess.run(
-            ["git", "--version"],
-            check=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        subprocess.run(["git", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception:
         raise RuntimeError("git was not found on PATH. Please install Git and try again.")
 
 
-def git_clone(repo: Repo, target_root: Path, depth: int, force: bool, recurse_submodules: bool, dry_run: bool) -> str:
+def git_update_repo(repo: Repo, target_root: Path, depth: int, force: bool,
+                    recurse_submodules: bool, dry_run: bool, install_requirements: bool) -> str:
     dest = target_root / repo.name
 
+    # === FORCE: delete and re-clone ===
+    if dest.exists() and force:
+        if dry_run:
+            return f"[DRY-RUN] Would remove existing: {dest}"
+        shutil.rmtree(dest)
+
+    # === UPDATE existing repo ===
     if dest.exists():
-        if force:
-            if dry_run:
-                return f"[DRY-RUN] Would remove existing: {dest}"
-            shutil.rmtree(dest)
+        if not (dest / ".git").exists():
+            return f"[SKIP] {repo.name} (exists but not a git repository)"
+
+        if dry_run:
+            return f"[DRY-RUN] Would git pull in: {dest}"
+
+        print(f"[PULL] Updating {repo.name}...")
+        cmd = ["git", "pull"]
+        if recurse_submodules:
+            cmd.append("--recurse-submodules")
+        p = subprocess.run(cmd, cwd=dest, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        if p.returncode != 0:
+            return f"[FAIL] {repo.name} (git pull failed)\n{p.stdout}"
+
+        action = "UPDATED"
+
+    # === CLONE new repo ===
+    else:
+        if dry_run:
+            cmd = ["git", "clone", "--depth", str(depth)]
+            if recurse_submodules:
+                cmd.append("--recurse-submodules")
+            cmd.extend([repo.url, str(dest)])
+            return f"[DRY-RUN] {' '.join(cmd)}"
+
+        cmd = ["git", "clone", "--depth", str(depth)]
+        if recurse_submodules:
+            cmd.append("--recurse-submodules")
+        cmd.extend([repo.url, str(dest)])
+
+        p = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if p.returncode != 0:
+            if dest.exists():
+                shutil.rmtree(dest, ignore_errors=True)
+            raise RuntimeError(f"Clone failed for {repo.url} -> {dest}\n{p.stdout}")
+
+        action = "CLONED"
+
+    # === Optional requirements install ===
+    if install_requirements:
+        req_file = dest / "requirements.txt"
+        if req_file.exists():
+            print(f"[INSTALL] Installing requirements for {repo.name}...")
+            try:
+                subprocess.run(
+                    [sys.executable, "-m", "pip", "install", "-r", str(req_file)],
+                    check=True,
+                    cwd=dest,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                )
+                return f"[OK] {repo.name} {action} + requirements installed"
+            except Exception as e:
+                return f"[OK] {repo.name} {action} (requirements failed: {e})"
         else:
-            return f"[SKIP] {repo.name} (already exists: {dest})"
+            return f"[OK] {repo.name} {action} (no requirements.txt)"
 
-    cmd = ["git", "clone", "--depth", str(depth)]
-    if recurse_submodules:
-        cmd.append("--recurse-submodules")
-    cmd.extend([repo.url, str(dest)])
-
-    if dry_run:
-        return f"[DRY-RUN] {' '.join(cmd)}"
-
-    p = subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    if p.returncode != 0:
-        # Clean up partial directory if clone failed
-        if dest.exists():
-            shutil.rmtree(dest, ignore_errors=True)
-        raise RuntimeError(f"Clone failed for {repo.url} -> {dest}\n{p.stdout}")
-
-    return f"[OK] {repo.name}"
+    return f"[OK] {repo.name} {action}"
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Clone repositories from an HTML list into custom_nodes (shallow).")
+    ap = argparse.ArgumentParser(description="Clone or UPDATE ComfyUI custom nodes from HTML list.")
     ap.add_argument("--html", required=True, type=Path, help="Path to the HTML file containing <a href=...> links.")
     ap.add_argument("--target", default=Path("./custom_nodes"), type=Path, help="Target custom_nodes directory.")
     ap.add_argument("--depth", default=1, type=int, help="Shallow clone depth (default: 1).")
-    ap.add_argument("--force", action="store_true", help="Delete existing repo folders and re-clone.")
-    ap.add_argument("--recurse-submodules", action="store_true", help="Also fetch submodules (still shallow).")
-    ap.add_argument("--jobs", default=1, type=int, help="Parallel clone jobs (default: 1).")
-    ap.add_argument("--dry-run", action="store_true", help="Print actions without cloning.")
+    ap.add_argument("--force", action="store_true", help="Delete existing folders and re-clone fresh.")
+    ap.add_argument("--recurse-submodules", action="store_true", help="Also fetch submodules.")
+    ap.add_argument("--jobs", default=1, type=int, help="Parallel jobs (default: 1, recommended 8 for pull).")
+    ap.add_argument("--dry-run", action="store_true", help="Print actions without doing anything.")
+    ap.add_argument("--install", action="store_true", default=False,
+                    help="After update/clone, run `pip install -r requirements.txt` (default: OFF)")
     args = ap.parse_args()
 
     ensure_git_available()
@@ -189,16 +220,23 @@ def main() -> int:
     args.target.mkdir(parents=True, exist_ok=True)
 
     print(f"Found {len(repos)} repositories in {args.html}")
-    print(f"Target directory: {args.target.resolve()}")
-    print(f"Clone depth: {args.depth} | jobs: {args.jobs} | force: {args.force} | dry-run: {args.dry_run}\n")
+    print(f"Target: {args.target.resolve()}")
+    print(f"Mode: {'FORCE re-clone' if args.force else 'Update (pull) if exists'} | jobs: {args.jobs} | install: {args.install}\n")
+
+    if args.install and args.jobs > 1:
+        print("⚠️  WARNING: --install + high --jobs can cause pip conflicts. Using --jobs 1 for safety.\n")
 
     ok = skip = fail = 0
     failures: List[str] = []
 
-    if args.jobs <= 1:
+    # Force sequential mode when installing requirements
+    use_parallel = args.jobs > 1 and not args.install
+
+    if not use_parallel:
         for r in repos:
             try:
-                msg = git_clone(r, args.target, args.depth, args.force, args.recurse_submodules, args.dry_run)
+                msg = git_update_repo(r, args.target, args.depth, args.force,
+                                       args.recurse_submodules, args.dry_run, args.install)
                 print(msg)
                 if msg.startswith("[OK]"):
                     ok += 1
@@ -207,11 +245,12 @@ def main() -> int:
             except Exception as e:
                 fail += 1
                 failures.append(f"{r.name}: {e}")
-                print(f"[FAIL] {r.name} ({r.url})", file=sys.stderr)
+                print(f"[FAIL] {r.name}", file=sys.stderr)
     else:
         with ThreadPoolExecutor(max_workers=args.jobs) as ex:
             fut_map = {
-                ex.submit(git_clone, r, args.target, args.depth, args.force, args.recurse_submodules, args.dry_run): r
+                ex.submit(git_update_repo, r, args.target, args.depth, args.force,
+                          args.recurse_submodules, args.dry_run, args.install): r
                 for r in repos
             }
             for fut in as_completed(fut_map):
@@ -226,7 +265,7 @@ def main() -> int:
                 except Exception as e:
                     fail += 1
                     failures.append(f"{r.name}: {e}")
-                    print(f"[FAIL] {r.name} ({r.url})", file=sys.stderr)
+                    print(f"[FAIL] {r.name}", file=sys.stderr)
 
     print("\nSummary")
     print(f"  OK:   {ok}")
@@ -234,7 +273,7 @@ def main() -> int:
     print(f"  FAIL: {fail}")
 
     if failures:
-        print("\nFailures (details):", file=sys.stderr)
+        print("\nFailures:", file=sys.stderr)
         for f in failures:
             print(f"- {f}", file=sys.stderr)
         return 1

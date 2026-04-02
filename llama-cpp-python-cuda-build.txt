@@ -1,0 +1,6 @@
+CMAKE_ARGS="-DGGML_CUDA=on" FORCE_CMAKE=1 pip install llama-cpp-python --upgrade --force-reinstall --no-cache-dir
+
+fix ultralytics model import bug:
+https://github.com/ultralytics/ultralytics/issues/19824
+
+pip install git+https://github.com/ultralytics/ultralytics.git@main
