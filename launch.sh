@@ -68,7 +68,6 @@ export COMFYUI_PATH=$PWD
 #export COMFYUI_MODEL_PATH="/media/john/20TB/AI/stable_diffusion_models_and_vae"
 
 
-
 #echo "Current active SD root path:"
 
 #echo $CUSTOM_ROOT_DRIVE
