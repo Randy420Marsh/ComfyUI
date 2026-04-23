@@ -97,7 +97,7 @@ echo "To disable comfy registry update set network_mode = private in ComfyUI/use
 #export controlnet_dir="$SD_ROOT_PATH/models/ControlNet"
 #export controlnet_annotator_models_path="$SD_ROOT_PATH/models/ControlNet/annotator/models"
 
-python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --listen 0.0.0.0 --disable-dynamic-vram --reserve-vram 0.1 --cache-ram 1
+python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --listen 0.0.0.0 --disable-dynamic-vram --reserve-vram 0.2 --cache-ram 6
 
 #python3 -s main.py --dont-upcast-attention --port 4434 --normalvram --use-pytorch-cross-attention --listen 0.0.0.0 --disable-dynamic-vram --disable-smart-memory --disable-async-offload
 
